@@ -39,7 +39,7 @@ export default function Home() {
             <a href="#commands">Commands</a>
             <a href="#heatmap">The heatmap</a>
             <a href="#not">What it isn&apos;t</a>
-            <a className="btn btn-primary" href={DMG_HREF} download>
+            <a className="btn" href={DMG_HREF} download>
               <DownloadIcon />
               Download
             </a>
@@ -73,11 +73,11 @@ export default function Home() {
         <div className="meta-line">
           <span>Free</span>
           <span className="sep" />
-          <span>macOS 13+</span>
+          <span>macOS 14 Sonoma+</span>
           <span className="sep" />
           <span>Apple Silicon &amp; Intel</span>
           <span className="sep" />
-          <span>.dmg · 8{" "}MB</span>
+          <span>.dmg · 3.3{" "}MB</span>
         </div>
 
         {/* APP MOCKUP */}
@@ -92,11 +92,13 @@ export default function Home() {
         <div className="wrap">
           <Reveal className="sec-head">
             <span className="eyebrow">The slash surface</span>
-            <h2>Five verbs. Two utilities. One rule.</h2>
+            <h2>One text input. Every command.</h2>
             <p>
-              Project arguments are implicit when you&apos;re inside a project,
-              explicit when you&apos;re working from global. No menus, no mouse,
-              no mode-switching into &ldquo;journaling mode.&rdquo;
+              Log work, tag and filter projects, rename, and jump to your editor
+              — all from a single input. Type{" "}
+              <span className="accent mono">#</span> and project names
+              autocomplete; quote names with spaces. No menus, no mouse, no
+              mode-switching into &ldquo;journaling mode.&rdquo;
             </p>
           </Reveal>
 
@@ -128,18 +130,27 @@ export default function Home() {
               </div>
               <div className="cmd-item">
                 <span className="syn">
-                  <b>/archive</b>
+                  <b>/rename-project</b>{" "}
+                  <span className="arg">&lt;name&gt;</span>
+                </span>
+                <span className="desc">Rename the current project.</span>
+              </div>
+              <div className="cmd-item">
+                <span className="syn">
+                  <b>/add-tag</b> <span className="arg">&lt;tag&gt;</span>
                 </span>
                 <span className="desc">
-                  Archive the current project out of the active list.
+                  Tag the current project.{" "}
+                  <span className="arg">/remove-tag</span> undoes it.
                 </span>
               </div>
               <div className="cmd-item">
                 <span className="syn">
-                  <b>/bring-back</b>
+                  <b>/filter</b> <span className="arg">&lt;tag&gt;</span>
                 </span>
                 <span className="desc">
-                  Restore a project from the archived view.
+                  Narrow the list and heatmaps to one tag. Bare{" "}
+                  <span className="arg">/filter</span> clears it.
                 </span>
               </div>
               <div className="cmd-item">
@@ -155,14 +166,17 @@ export default function Home() {
                   <b>/show-all</b>
                 </span>
                 <span className="desc">
-                  Toggle archived projects into the list view.
+                  Show active and archived projects together (
+                  <span className="arg">/show-active</span> reverts).
                 </span>
               </div>
               <div className="cmd-item">
                 <span className="syn">
                   <b>/help</b>
                 </span>
-                <span className="desc">Show every command inline, in place.</span>
+                <span className="desc">
+                  Show every command inline, in place.
+                </span>
               </div>
             </Reveal>
 
@@ -186,8 +200,8 @@ export default function Home() {
                     <span className="ok">#trace</span>
                   </div>
                   <div className="ln">
-                    <span className="pr">›</span>/log #llm-evals harness flaky on
-                    retries
+                    <span className="pr">›</span>/log #llm-evals harness flaky
+                    on retries
                   </div>
                   <div className="out">
                     <span className="vio">✎</span> entry saved ·{" "}
@@ -212,9 +226,10 @@ export default function Home() {
                 </div>
               </div>
               <p className="cmd-note">
-                <b>Explicit over magical.</b> Typos produce errors, not
-                autocorrect. From global, you always name the project. The
-                mental model is a small CLI for personal work.
+                <b>A small CLI for personal work.</b> From global you always
+                name the project, and unknown scopes produce errors, not
+                autocorrect. Archiving isn&apos;t a command anymore — it&apos;s
+                the Active toggle in the project header.
               </p>
             </Reveal>
           </div>
@@ -229,14 +244,15 @@ export default function Home() {
           <Reveal className="sec-head">
             <span className="eyebrow">Honest by construction</span>
             <h2>
-              The heatmap reflects real work — and it can&apos;t be edited into a
-              lie.
+              The heatmap reflects real work — and it can&apos;t be edited into
+              a lie.
             </h2>
             <p>
-              Only completions and journal entries count as activity. Creating a
-              task does not. And once an activity is more than 24 hours old,
-              it&apos;s immutable — you can&apos;t backfill a green square you
-              didn&apos;t earn.
+              Every project gets a GitHub-style heatmap, spanning from the day
+              you created it to today. Only completions and journal entries
+              count — creating a task doesn&apos;t. Click any cell to see
+              exactly what you logged that day. After 24 hours an entry locks,
+              so you can&apos;t backfill a square you didn&apos;t earn.
             </p>
           </Reveal>
 
@@ -247,8 +263,8 @@ export default function Home() {
                 #trace
               </div>
               <div className="stat">
-                <b>{active}</b> active days in the last 26 weeks · last logged{" "}
-                <b>2m ago</b>
+                <b>{active}</b> active days · click any cell to see what landed
+                · last logged <b>2m ago</b>
               </div>
             </div>
             <div className="cal">
@@ -302,49 +318,64 @@ export default function Home() {
       <section className="sec">
         <div className="wrap">
           <Reveal className="sec-head">
-            <span className="eyebrow">Why it exists</span>
-            <h2>Four problems no planner solves.</h2>
+            <span className="eyebrow">What&apos;s inside</span>
+            <h2>Built for how you actually work.</h2>
           </Reveal>
           <Reveal className="feat-grid">
             <div className="feat">
               <span className="ix">01</span>
               <h3>
-                &ldquo;What did I <span className="accent">actually</span>{" "}
-                do?&rdquo;
+                Tags &amp; <span className="accent">filtering</span>
               </h3>
               <p>
-                Notion and Linear answer what needs to be done. Neither answers
-                what you&apos;ve been doing. Across several projects, that
-                question gets very hard to answer honestly without a record.
+                Tag any project, then narrow the list — and the heatmaps — down
+                to just the projects that share a tag with a single{" "}
+                <span className="accent mono">/filter</span>.
               </p>
             </div>
             <div className="feat">
               <span className="ix">02</span>
-              <h3>Journaling without the friction</h3>
+              <h3>Focus timers</h3>
               <p>
-                Most journaling apps make you context-switch into
-                &ldquo;journaling mode.&rdquo; A menubar app with slash commands
-                lets you log a thought in under five seconds — without ever
-                leaving the work.
+                Pomodoro-style timers tile right inside the popover. The
+                countdown lives in your menubar while you work, and a green ring
+                sweeps the screen edge when time&apos;s up.
               </p>
             </div>
             <div className="feat">
               <span className="ix">03</span>
-              <h3>The neglect problem</h3>
+              <h3>Open in your tools</h3>
               <p>
-                When you run five projects, one of them is being quietly starved
-                of attention. The heatmap makes that visible — shown as days
-                since you last logged, stated neutrally, never as a nag.
+                Link a project to a folder on disk once, then jump straight into{" "}
+                <span className="accent">Cursor</span>, cmux, or the repo&apos;s
+                GitHub page from the project header.
               </p>
             </div>
             <div className="feat">
               <span className="ix">04</span>
-              <h3>An honest record</h3>
+              <h3>Click-to-inspect heatmaps</h3>
               <p>
-                Most tools let you check things off before you do them, then
-                edit history. Trace grounds everything in activity events, and
-                locks them after 24 hours. The record stays honest because it
-                can&apos;t be rewritten.
+                Click any day to see which tasks you finished and what you
+                journaled, and when. A combined heatmap stacks every visible
+                project into one view.
+              </p>
+            </div>
+            <div className="feat">
+              <span className="ix">05</span>
+              <h3>Tasks that age</h3>
+              <p>
+                Pending tasks visibly rot the longer they sit unfinished. Drag
+                to reorder, double-click to edit inline. Completions can be
+                undone for 24 hours — then they lock.
+              </p>
+            </div>
+            <div className="feat">
+              <span className="ix">06</span>
+              <h3>Fully local</h3>
+              <p>
+                No accounts, no sync, no network calls for logging. Everything
+                lives in one SQLite file on your Mac, and Trace runs
+                menubar-only — no Dock icon.
               </p>
             </div>
           </Reveal>
@@ -456,7 +487,7 @@ export default function Home() {
             </a>
           </div>
           <div className="meta-line" style={{ marginTop: 22 }}>
-            <span>macOS 13 Ventura or later</span>
+            <span>macOS 14 Sonoma or later</span>
             <span className="sep" />
             <span>Universal · Apple Silicon &amp; Intel</span>
             <span className="sep" />
