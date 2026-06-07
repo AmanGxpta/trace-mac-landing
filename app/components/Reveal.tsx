@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
  * Fades its children in once they scroll into view, mirroring the
@@ -8,9 +8,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  */
 export default function Reveal({
   className = "",
+  style,
   children,
 }: {
   className?: string;
+  style?: React.CSSProperties;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -42,6 +44,7 @@ export default function Reveal({
   return (
     <div
       ref={ref}
+      style={style}
       className={`reveal${shown ? " in" : ""}${className ? ` ${className}` : ""}`}
     >
       {children}
