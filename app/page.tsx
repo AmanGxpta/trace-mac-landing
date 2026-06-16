@@ -60,6 +60,12 @@ export default function Home() {
               Commands
             </a>
             <a
+              href="#inside"
+              className="font-mono text-[13.5px] text-ink-dim hover:text-ink transition-colors duration-150 whitespace-nowrap hidden md:block"
+            >
+              Screens
+            </a>
+            <a
               href="#features"
               className="font-mono text-[13.5px] text-ink-dim hover:text-ink transition-colors duration-150 whitespace-nowrap hidden md:block"
             >
@@ -166,14 +172,10 @@ export default function Home() {
             </p>
           </Reveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] gap-[54px] mt-[50px] items-start">
-            {/* Command list — grouped */}
-            <Reveal className="flex flex-col gap-[2px] font-mono">
-              {/* Log */}
-              <div className="mb-[26px]">
-                <span className="font-mono text-[11px] tracking-[.15em] uppercase text-accent block mb-1 opacity-85">
-                  Log — the core loop
-                </span>
+          <Reveal className="grid grid-cols-1 lg:grid-cols-2 gap-x-[54px] gap-y-[40px] mt-[50px] items-start">
+            {/* Column A — Log + Organise */}
+            <div className="flex flex-col gap-[40px]">
+              <CmdGroup label="Log — the core loop">
                 <CmdItem
                   syn={
                     <>
@@ -201,12 +203,9 @@ export default function Home() {
                   }
                   desc="Add a short journal entry. Counts as activity."
                 />
-              </div>
-              {/* Organise */}
-              <div className="mb-[26px]">
-                <span className="font-mono text-[11px] tracking-[.15em] uppercase text-accent block mb-1 opacity-85">
-                  Organise — in a project
-                </span>
+              </CmdGroup>
+
+              <CmdGroup label="Organise — in a project">
                 <CmdItem
                   syn={
                     <>
@@ -236,12 +235,12 @@ export default function Home() {
                   }
                   desc="Strip a tag back off."
                 />
-              </div>
-              {/* Navigate */}
-              <div>
-                <span className="font-mono text-[11px] tracking-[.15em] uppercase text-accent block mb-1 opacity-85">
-                  Navigate — from global
-                </span>
+              </CmdGroup>
+            </div>
+
+            {/* Column B — Navigate + note */}
+            <div className="flex flex-col gap-[40px]">
+              <CmdGroup label="Navigate — from global">
                 <CmdItem
                   syn={
                     <>
@@ -277,68 +276,10 @@ export default function Home() {
                   }
                   desc="Show every command inline, in place."
                 />
-              </div>
-            </Reveal>
+              </CmdGroup>
 
-            <Reveal>
-              <div className="bg-[#0b0d10] border border-line2 rounded-[14px] shadow-[0_30px_70px_-30px_rgba(0,0,0,.8)] overflow-hidden font-mono">
-                <div className="flex items-center gap-2 px-[14px] py-[11px] border-b border-line bg-white/[0.02]">
-                  <span className="flex gap-[6px]">
-                    <i className="w-[11px] h-[11px] rounded-full bg-[#2a2e34] block" />
-                    <i className="w-[11px] h-[11px] rounded-full bg-[#2a2e34] block" />
-                    <i className="w-[11px] h-[11px] rounded-full bg-[#2a2e34] block" />
-                  </span>
-                  <span className="text-[11.5px] text-ink-faint tracking-[.04em] whitespace-nowrap">
-                    trace — #global
-                  </span>
-                </div>
-                <div className="px-[18px] py-[18px] pb-5 text-[13px] leading-[2.05]">
-                  <div className="pl-[22px] -indent-[22px] text-ink">
-                    <span className="text-accent font-bold inline-block w-[22px] indent-0">
-                      ›
-                    </span>
-                    /done #trace shipped heatmap scale
-                  </div>
-                  <span className="text-ink-faint pl-[22px] block">
-                    <span className="text-accent">✓</span> completed · logged to{" "}
-                    <span className="text-accent">#trace</span>
-                  </span>
-                  <div className="pl-[22px] -indent-[22px] text-ink">
-                    <span className="text-accent font-bold inline-block w-[22px] indent-0">
-                      ›
-                    </span>
-                    /add-tag swift
-                  </div>
-                  <span className="text-ink-faint pl-[22px] block">
-                    ＃ tagged <span className="text-accent">#trace</span> ·
-                    swift
-                  </span>
-                  <div className="pl-[22px] -indent-[22px] text-ink">
-                    <span className="text-accent font-bold inline-block w-[22px] indent-0">
-                      ›
-                    </span>
-                    /filter swift
-                  </div>
-                  <span className="text-ink-faint pl-[22px] block">
-                    ⊟ filtered list · 3 projects tagged{" "}
-                    <span className="text-accent">swift</span>
-                  </span>
-                  <div className="pl-[22px] -indent-[22px] text-ink">
-                    <span className="text-accent font-bold inline-block w-[22px] indent-0">
-                      ›
-                    </span>
-                    /log shipped it yesterday
-                  </div>
-                  <span
-                    className="pl-[22px] block"
-                    style={{ color: "#e06c6c" }}
-                  >
-                    ✕ no project in scope — name one first
-                  </span>
-                </div>
-              </div>
               <p
-                className="mt-[22px] font-mono text-[13px] text-ink-faint pl-4 border-l-2 leading-[1.7]"
+                className="font-mono text-[13px] text-ink-faint pl-4 border-l-2 leading-[1.7]"
                 style={{
                   borderColor:
                     "color-mix(in oklab, var(--accent) 55%, transparent)",
@@ -352,8 +293,85 @@ export default function Home() {
                 <span className="font-mono">Active</span> toggle in the project
                 header instead.
               </p>
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <div
+        className="h-px max-w-[1140px] mx-auto"
+        style={{ background: "var(--line)" }}
+      />
+
+      {/* ── INSIDE / SCREENS ────────────────────────────────────────── */}
+      <section className="py-[92px] relative" id="inside">
+        <div className="max-w-[1140px] mx-auto px-7">
+          <Reveal className="max-w-[64ch]">
+            <span className="font-mono text-[12.5px] tracking-[.16em] uppercase text-ink-faint inline-flex items-center gap-[9px] whitespace-nowrap before:content-[''] before:w-[6px] before:h-[6px] before:rounded-full before:bg-accent before:shadow-[0_0_10px_var(--accent)]">
+              A look inside
+            </span>
+            <h2 className="font-sans font-bold text-[clamp(26px,3.6vw,38px)] tracking-[-0.02em] leading-[1.1] mt-4 [text-wrap:balance]">
+              Every screen, one keystroke from the menubar.
+            </h2>
+            <p className="mt-4 text-ink-dim text-[17px] max-w-[54ch] [text-wrap:pretty]">
+              Trace lives in a single dropdown. Hit the shortcut and whatever
+              you need — the project list, one project, its journal, its heatmap
+              — is already there. No window to manage, no Dock icon to hunt for.
+            </p>
+          </Reveal>
+
+          <Reveal className="grid grid-cols-1 md:grid-cols-2 gap-x-[40px] gap-y-[46px] mt-[52px]">
+            <Shot
+              src="/shots/projects-list.png"
+              alt="Trace global project list in the macOS menubar, each project a colored row with tags and last-activity dates"
+              title="The global view"
+              desc={
+                <>
+                  Every project is a colour-coded row with its tags and the last
+                  time you touched it. From here you name a project explicitly —{" "}
+                  <span className="font-mono text-accent">/done #northwind</span>{" "}
+                  — and <span className="font-mono">#</span> tab-completes the
+                  name.
+                </>
+              }
+            />
+            <Shot
+              src="/shots/project-detail.png"
+              alt="A single Trace project showing pending tasks on the left and completed tasks on the right with timestamps"
+              title="Inside a project"
+              desc={
+                <>
+                  Pending on the left, completed on the right — each entry
+                  stamped with when it landed. The header toolbar jumps straight
+                  to the folder, repo, editor, and that project&apos;s heatmap.
+                </>
+              }
+            />
+            <Shot
+              src="/shots/journal.png"
+              alt="Trace journal view for a project listing timestamped notes from today"
+              title="A journal per project"
+              desc={
+                <>
+                  <span className="font-mono text-accent">/log</span> drops a
+                  timestamped note without leaving the work. Edits and deletions
+                  ask first — the record is meant to stay honest.
+                </>
+              }
+            />
+            <Shot
+              src="/shots/show-all.png"
+              alt="Trace project list expanded with /show-all, archived projects shown dimmed and italic"
+              title="Nothing is ever deleted"
+              desc={
+                <>
+                  <span className="font-mono text-accent">/show-all</span> folds
+                  archived projects back into the list — dimmed and italic.
+                  Archiving is a quiet toggle, never a permanent delete.
+                </>
+              }
+            />
+          </Reveal>
         </div>
       </section>
 
@@ -409,6 +427,35 @@ export default function Home() {
             project&apos;s own map stacked below. It respects your current
             filter: active-only, tag-filtered, or all.
           </p>
+
+          <Reveal className="grid grid-cols-1 md:grid-cols-2 gap-x-[40px] gap-y-[46px] mt-[50px]">
+            <Shot
+              src="/shots/heatmap-day.png"
+              alt="A single project's heatmap in Trace with a selected day expanded to show its completions and logs"
+              title="Per-project, day by day"
+              desc={
+                <>
+                  Open any cell to read exactly what you completed and logged
+                  that day, down to the minute —{" "}
+                  <span className="text-ink-faint">
+                    completions and journal entries only, locked after 24 hours.
+                  </span>
+                </>
+              }
+            />
+            <Shot
+              src="/shots/heatmap-combined.png"
+              alt="Trace combined heatmap view fusing every project, with each project's own colored heatmap stacked below"
+              title="Combined across every project"
+              desc={
+                <>
+                  One fused map up top, then each project&apos;s own heatmap
+                  stacked below in its own colour. See where all your attention
+                  actually went at a glance.
+                </>
+              }
+            />
+          </Reveal>
         </div>
       </section>
 
@@ -581,85 +628,31 @@ export default function Home() {
               </div>
             </Reveal>
 
-            <Reveal>
-              {/* Focus card mockup */}
-              <div
-                className="rounded-[16px] border border-line2 overflow-hidden shadow-[0_30px_70px_-34px_rgba(0,0,0,.8)]"
-                style={{
-                  background:
-                    "linear-gradient(180deg,var(--panel-2),var(--panel))",
-                }}
-              >
-                <div className="flex items-center justify-between gap-[14px] px-[17px] py-4 border-b border-line flex-wrap">
-                  <div className="font-mono text-[14px] text-ink flex items-center gap-[9px]">
-                    <span className="w-[9px] h-[9px] rounded-full bg-accent shadow-[0_0_9px_var(--accent)]" />
-                    trace
-                    <span className="text-[11px] text-ink-faint">
-                      swift · menubar
-                    </span>
-                  </div>
-                  <span
-                    className="font-mono text-[11px] text-accent inline-flex items-center gap-[7px] border rounded-[20px] px-[10px] py-[3px] pl-2"
-                    style={{
-                      borderColor:
-                        "color-mix(in oklab,var(--accent) 32%,transparent)",
-                      background:
-                        "color-mix(in oklab,var(--accent) 10%,transparent)",
-                    }}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-accent" />
-                    Active
-                  </span>
-                </div>
-                <div className="flex gap-2 px-[17px] py-[13px] border-b border-line flex-wrap">
-                  <DevBtn
-                    icon={
-                      <>
-                        <path d="M4 6l8-3 8 3v10l-8 3-8-3z" />
-                        <path d="M12 3v18" />
-                      </>
-                    }
-                    label="Cursor"
-                  />
-                  <DevBtn
-                    icon={
-                      <>
-                        <rect x="3" y="4" width="18" height="16" rx="2" />
-                        <path d="M7 9l3 3-3 3" />
-                      </>
-                    }
-                    label="cmux"
-                  />
-                  <DevBtn
-                    icon={
-                      <>
-                        <circle cx="6" cy="6" r="2.2" />
-                        <circle cx="6" cy="18" r="2.2" />
-                        <circle cx="18" cy="8" r="2.2" />
-                        <path d="M6 8.2v7.6M18 10.2c0 4-6 2-6 5.8" />
-                      </>
-                    }
-                    label="GitHub"
-                  />
-                </div>
-                <div className="p-3 flex flex-col gap-[3px]">
-                  <FocusTask
-                    state="fresh"
-                    text="wire keyboard nav into the kanban"
-                    age="2h"
-                  />
-                  <FocusTask
-                    state="aging"
-                    text="add the export menu item"
-                    age="6d"
-                  />
-                  <FocusTask
-                    state="rotting"
-                    text="investigate the SQLite vacuum"
-                    age="3w"
-                  />
-                </div>
-              </div>
+            <Reveal className="flex flex-col gap-[34px]">
+              <Shot
+                src="/shots/open-editor.png"
+                alt="Clicking the editor icon in Trace opens the linked project folder directly in the Cursor editor"
+                title="Open in Cursor"
+                desc={
+                  <>
+                    One click on the editor icon drops the linked folder
+                    straight into Cursor — agent panel and all — without leaving
+                    the record behind.
+                  </>
+                }
+              />
+              <Shot
+                src="/shots/link-folder.png"
+                alt="Trace prompting to choose a folder to link to a project the first time"
+                title="Link a folder once"
+                desc={
+                  <>
+                    Point a project at a directory the first time. Every jump
+                    after — editor, repo, workspace — is instant, and the path
+                    stays local to your machine.
+                  </>
+                }
+              />
             </Reveal>
           </div>
         </div>
@@ -870,7 +863,7 @@ export default function Home() {
 
         <footer className="mt-24 border-t border-line pt-9 pb-[60px]">
           <div className="max-w-[1140px] mx-auto px-7 flex items-center justify-between gap-5 flex-wrap font-mono text-[12.5px] text-ink-faint">
-            <div className="flex items-center gap-[9px] text-ink-dim whitespace-nowrap">
+            <div className="flex items-center gap-[11px] whitespace-nowrap">
               <Image
                 src="/trace-icon.png"
                 alt=""
@@ -878,7 +871,14 @@ export default function Home() {
                 height={20}
                 className="rounded-[6px]"
               />
-              <span>Trace — v0.1.0 · Phase 0</span>
+              <span className="flex flex-col gap-[2px] leading-tight">
+                <span className="text-ink-dim">Trace — v0.1.0 · Phase 0</span>
+                <span className="text-[11.5px] text-ink-faint inline-flex items-center gap-[7px]">
+                  <span className="w-[5px] h-[5px] rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />
+                  Built &amp; used daily at{" "}
+                  <span className="text-ink-dim font-medium">Navitek Labs</span>
+                </span>
+              </span>
             </div>
             <div className="flex gap-6 flex-wrap">
               <a
@@ -921,6 +921,57 @@ export default function Home() {
 }
 
 /* ── Small reusable sub-components ─────────────────────────────────── */
+
+function Shot({
+  src,
+  alt,
+  title,
+  desc,
+}: {
+  src: string;
+  alt: string;
+  title: string;
+  desc: React.ReactNode;
+}) {
+  return (
+    <figure className="flex flex-col">
+      <div className="rounded-[14px] border border-line2 overflow-hidden bg-[#0b0d10] shadow-[0_30px_70px_-34px_rgba(0,0,0,.8)]">
+        <Image
+          src={src}
+          alt={alt}
+          width={1390}
+          height={780}
+          className="w-full h-auto block"
+        />
+      </div>
+      <figcaption className="mt-[18px]">
+        <h3 className="font-sans font-semibold text-[16.5px] tracking-[-0.01em] leading-[1.25]">
+          {title}
+        </h3>
+        <p className="mt-[8px] text-ink-dim text-[14px] leading-[1.55] [text-wrap:pretty]">
+          {desc}
+        </p>
+      </figcaption>
+    </figure>
+  );
+}
+
+function CmdGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <span className="font-mono text-[11px] tracking-[.15em] uppercase text-accent block mb-1 opacity-85">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
 
 function CmdItem({
   syn,
@@ -1011,71 +1062,6 @@ function DevListItem({
         </h4>
         <p className="mt-1 text-ink-dim text-[13.5px] leading-[1.5]">{desc}</p>
       </div>
-    </div>
-  );
-}
-
-function DevBtn({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <span className="font-mono text-[12px] text-ink-dim inline-flex items-center gap-[7px] px-3 py-[7px] border border-line2 rounded-[9px] bg-white/[0.02] cursor-pointer hover:text-ink hover:border-white/[0.24] hover:bg-white/[0.05] transition-all duration-150">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-[14px] h-[14px]"
-      >
-        {icon}
-      </svg>
-      {label}
-    </span>
-  );
-}
-
-function FocusTask({
-  state,
-  text,
-  age,
-}: {
-  state: "fresh" | "aging" | "rotting";
-  text: string;
-  age: string;
-}) {
-  const stateStyles = {
-    fresh: {
-      row: "",
-      txt: "text-ink",
-      age: "text-accent",
-      ageBg: "color-mix(in oklab,var(--accent) 12%,transparent)",
-    },
-    aging: {
-      row: "opacity-[0.82]",
-      txt: "text-ink-dim",
-      age: "text-[#e0a23c]",
-      ageBg: "rgba(224,162,60,.12)",
-    },
-    rotting: {
-      row: "opacity-55",
-      txt: "text-ink-faint line-through decoration-[rgba(224,108,108,.4)]",
-      age: "text-[#e06c6c]",
-      ageBg: "rgba(224,108,108,.12)",
-    },
-  };
-  const s = stateStyles[state];
-  return (
-    <div
-      className={`grid grid-cols-[auto_1fr_auto] gap-[11px] items-center px-[9px] py-[9px] rounded-[9px] text-[13.5px] ${s.row}`}
-    >
-      <span className="w-[15px] h-[15px] rounded-[4px] border-[1.5px] border-ink-faint" />
-      <span className={s.txt}>{text}</span>
-      <span
-        className={`font-mono text-[10.5px] px-[7px] py-[1px] rounded-[5px] whitespace-nowrap ${s.age}`}
-        style={{ background: s.ageBg }}
-      >
-        {age}
-      </span>
     </div>
   );
 }
