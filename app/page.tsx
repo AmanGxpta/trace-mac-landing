@@ -3,7 +3,7 @@ import Reveal from "./components/Reveal";
 import HeatmapInteractive from "./components/HeatmapInteractive";
 import { buildHeatmap } from "@/lib/heatmap";
 
-const DMG_HREF = "/downloads/Trace-0.1.0.dmg";
+const DMG_HREF = "/downloads/Trace-1.0.2.dmg";
 
 function DownloadIcon() {
   return (
@@ -329,7 +329,9 @@ export default function Home() {
                 <>
                   Every project is a colour-coded row with its tags and the last
                   time you touched it. From here you name a project explicitly —{" "}
-                  <span className="font-mono text-accent">/done #northwind</span>{" "}
+                  <span className="font-mono text-accent">
+                    /done #northwind
+                  </span>{" "}
                   — and <span className="font-mono">#</span> tab-completes the
                   name.
                 </>
