@@ -2,24 +2,9 @@ import Image from "next/image";
 import Reveal from "./components/Reveal";
 import HeatmapInteractive from "./components/HeatmapInteractive";
 import { buildHeatmap } from "@/lib/heatmap";
+import { FaApple } from "react-icons/fa";
 
-const DMG_HREF = "/downloads/Trace-0.1.0.dmg";
-
-function DownloadIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="w-[15px] h-[15px]"
-    >
-      <path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14" />
-    </svg>
-  );
-}
+const DMG_HREF = "/downloads/Trace-1.0.2.dmg";
 
 export default function Home() {
   const { levels, active, months } = buildHeatmap();
@@ -49,7 +34,7 @@ export default function Home() {
             />
             <span>trace</span>
             <span className="text-[11px] text-ink-faint font-medium px-[6px] py-[1px] border border-line2 rounded-[5px]">
-              v0.1.0
+              v1.0.2
             </span>
           </a>
           <div className="flex items-center gap-7">
@@ -82,7 +67,7 @@ export default function Home() {
               href={DMG_HREF}
               download
             >
-              <DownloadIcon />
+              <FaApple />
               Download
             </a>
           </div>
@@ -112,7 +97,7 @@ export default function Home() {
             href={DMG_HREF}
             download
           >
-            <DownloadIcon />
+            <FaApple />
             Download for macOS
           </a>
           <a
@@ -329,7 +314,9 @@ export default function Home() {
                 <>
                   Every project is a colour-coded row with its tags and the last
                   time you touched it. From here you name a project explicitly —{" "}
-                  <span className="font-mono text-accent">/done #northwind</span>{" "}
+                  <span className="font-mono text-accent">
+                    /done #northwind
+                  </span>{" "}
                   — and <span className="font-mono">#</span> tab-completes the
                   name.
                 </>
@@ -840,7 +827,7 @@ export default function Home() {
               href={DMG_HREF}
               download
             >
-              <DownloadIcon />
+              <FaApple />
               Download for macOS
             </a>
             <a
@@ -872,7 +859,7 @@ export default function Home() {
                 className="rounded-[6px]"
               />
               <span className="flex flex-col gap-[2px] leading-tight">
-                <span className="text-ink-dim">Trace — v0.1.0 · Phase 0</span>
+                <span className="text-ink-dim">Trace</span>
                 <span className="text-[11.5px] text-ink-faint inline-flex items-center gap-[7px]">
                   <span className="w-[5px] h-[5px] rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />
                   Built &amp; used daily at{" "}
