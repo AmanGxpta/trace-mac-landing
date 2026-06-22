@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Reveal from "./components/Reveal";
+import DownloadLink from "./components/DownloadLink";
 import HeatmapInteractive from "./components/HeatmapInteractive";
 import { buildHeatmap } from "@/lib/heatmap";
 import { FaApple } from "react-icons/fa";
@@ -63,13 +64,19 @@ export default function Home() {
               Developers
             </a>
             <a
+              href="/changelog"
+              className="font-mono text-[13.5px] text-ink-dim hover:text-ink transition-colors duration-150 whitespace-nowrap hidden md:block"
+            >
+              Changelog
+            </a>
+            <DownloadLink
+              location="nav"
               className="font-mono text-[13.5px] font-semibold inline-flex items-center gap-[9px] px-4 py-[9px] rounded-[9px] cursor-pointer border border-transparent transition-all duration-200 bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px whitespace-nowrap"
               href={DMG_HREF}
-              download
             >
               <FaApple />
               Download
-            </a>
+            </DownloadLink>
           </div>
         </div>
       </nav>
@@ -92,14 +99,14 @@ export default function Home() {
           a per-project heatmap built from your real work, not your intentions.
         </p>
         <div className="flex gap-[13px] justify-center flex-wrap mt-[34px]">
-          <a
+          <DownloadLink
+            location="hero"
             className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] cursor-pointer border border-transparent bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px transition-transform duration-[120ms] whitespace-nowrap"
             href={DMG_HREF}
-            download
           >
             <FaApple />
             Download for macOS
-          </a>
+          </DownloadLink>
           <a
             className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
             href="#commands"
@@ -822,14 +829,14 @@ export default function Home() {
             five seconds.
           </p>
           <div className="flex gap-[13px] justify-center flex-wrap mt-8">
-            <a
+            <DownloadLink
+              location="final_cta"
               className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-transparent bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px transition-transform duration-[120ms] whitespace-nowrap"
               href={DMG_HREF}
-              download
             >
               <FaApple />
               Download for macOS
-            </a>
+            </DownloadLink>
             <a
               className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
               href="#top"
@@ -887,12 +894,18 @@ export default function Home() {
                 Developers
               </a>
               <a
+                href="/changelog"
+                className="whitespace-nowrap hover:text-ink transition-colors"
+              >
+                Changelog
+              </a>
+              <DownloadLink
                 href={DMG_HREF}
-                download
+                location="footer"
                 className="whitespace-nowrap hover:text-ink transition-colors"
               >
                 Download .dmg
-              </a>
+              </DownloadLink>
               <a
                 href="#top"
                 className="whitespace-nowrap hover:text-ink transition-colors"
