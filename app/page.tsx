@@ -5,7 +5,7 @@ import HeatmapInteractive from "./components/HeatmapInteractive";
 import { buildHeatmap } from "@/lib/heatmap";
 import { FaApple } from "react-icons/fa";
 
-const DMG_HREF = "/downloads/Trace-1.0.2.dmg";
+const DMG_HREF = "/downloads/Trace-Installer.dmg";
 
 export default function Home() {
   const { levels, active, months } = buildHeatmap();
