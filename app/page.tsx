@@ -105,7 +105,7 @@ export default function Home() {
             href={DMG_HREF}
           >
             <FaApple />
-            Download for macOS
+            Download for Free
           </DownloadLink>
           <a
             className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
@@ -835,7 +835,7 @@ export default function Home() {
               href={DMG_HREF}
             >
               <FaApple />
-              Download for macOS
+              Download for Free
             </DownloadLink>
             <a
               className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
