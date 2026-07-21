@@ -26,7 +26,9 @@ export default function ChangelogPage() {
       {/* ── NAV ─────────────────────────────────────────────────────── */}
       <nav
         className="sticky top-0 z-50 backdrop-blur-[14px] saturate-120 border-b border-line"
-        style={{ background: "color-mix(in oklab, var(--bg) 72%, transparent)" }}
+        style={{
+          background: "color-mix(in oklab, var(--bg) 72%, transparent)",
+        }}
       >
         <div className="max-w-[1140px] mx-auto h-[62px] px-7 flex items-center justify-between">
           <Link
@@ -97,10 +99,6 @@ export default function ChangelogPage() {
           <h1 className="font-sans font-bold text-[clamp(32px,5vw,52px)] tracking-[-0.025em] leading-[1.06] mt-[18px] [text-wrap:balance]">
             Every release, in the open.
           </h1>
-          <p className="mt-5 text-ink-dim text-[clamp(16px,2vw,18px)] max-w-[56ch] leading-[1.6] [text-wrap:pretty]">
-            What changed, version by version — newest first. The same honest
-            record, applied to the app itself.
-          </p>
         </Reveal>
       </header>
 
@@ -161,11 +159,17 @@ export default function ChangelogPage() {
 }
 
 function ChangeTag({ kind }: { kind: ChangeKind }) {
-  const label = { new: "New", improved: "Improved", fixed: "Fixed" }[kind];
+  const label = {
+    new: "New",
+    improved: "Improved",
+    fixed: "Fixed",
+    removed: "Removed",
+  }[kind];
   const color = {
     new: "var(--accent)",
     improved: "var(--ink-dim)",
     fixed: "var(--ink-faint)",
+    removed: "var(--ink-faint)",
   }[kind];
   return (
     <span

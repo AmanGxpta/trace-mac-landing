@@ -9,7 +9,7 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://traceapp.naviteklabs.com"
 ).replace(/\/$/, "");
 
-export const APP_VERSION = "1.0.2";
+export const APP_VERSION = "0.10.0";
 export const DMG_PATH = `/downloads/Trace-${APP_VERSION}.dmg`;
 
 export const site = {
