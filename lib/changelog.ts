@@ -18,6 +18,17 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "1.11.0",
+    date: "2026-07-21",
+    title: "Capturing Actions Happened in past",
+    changes: [
+      {
+        kind: "new",
+        text: "Now Users can capture actions happened on their screen in last 30/60/90 seconds with /capture-screen 30|60|90 given their preferences. It captures actions prior the command was sent, and stores that in the journal as a log.",
+      },
+    ],
+  },
+  {
     version: "1.10.0",
     date: "2026-07-21",
     title: "Cinematic onboarding tour",
