@@ -7,7 +7,7 @@ import { buildHeatmap } from "@/lib/heatmap";
 import { BETA_DOWNLOAD_ROUTE } from "@/lib/site";
 
 export default function Home() {
-  const { levels, active, months } = buildHeatmap();
+  const heatmapCells = buildHeatmap();
 
   return (
     <>
@@ -32,7 +32,7 @@ export default function Home() {
               height={26}
               className="rounded-[7px]"
             />
-            <span>trace</span>
+            <span>Trace</span>
             <span className="text-[11px] text-ink-faint font-medium px-[6px] py-[1px] border border-line2 rounded-[5px]">
               v1.11.1
             </span>
@@ -81,23 +81,22 @@ export default function Home() {
       <a id="top" />
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
-      <header className="pt-[84px] pb-[30px] text-center max-w-[1140px] mx-auto px-7">
+      <header className="pt-24 pb-10 text-center max-w-[1000px] mx-auto px-7">
         <span className="font-mono text-[12.5px] tracking-[.16em] uppercase text-ink-faint inline-flex items-center gap-[9px] whitespace-nowrap before:content-[''] before:w-[6px] before:h-[6px] before:rounded-full before:bg-accent before:shadow-[0_0_10px_var(--accent)]">
           macOS menubar · keyboard-driven
         </span>
-        <h1 className="font-sans font-bold text-[clamp(34px,6vw,62px)] leading-[1.04] tracking-[-0.025em] max-w-[16ch] mx-auto mt-[22px] [text-wrap:balance]">
+        <h1 className="font-sans font-bold text-[clamp(34px,6vw,66px)] leading-[1.03] tracking-[-0.028em] max-w-[15ch] mx-auto mt-6 [text-wrap:balance]">
           An honest record of what you{" "}
           <em className="not-italic text-accent">actually</em> did.
         </h1>
-        <p className="max-w-[58ch] mx-auto mt-6 text-[clamp(16px,2.1vw,19px)] text-ink-dim leading-[1.62] [text-wrap:pretty]">
-          Trace is a menubar app for people running several projects at once.
-          Log tasks and notes with slash commands in under five seconds — tag
-          and filter your work, run a focus timer, jump into Cursor — and watch
-          a per-project heatmap built from your real work, not your intentions.
+        <p className="max-w-[56ch] mx-auto mt-6 text-[clamp(16px,2.1vw,19px)] text-ink-dim leading-[1.62] [text-wrap:pretty]">
+          A macOS menubar app for people running several projects at once. Log
+          tasks and notes with slash commands in seconds — then watch a
+          per-project heatmap built from real work, not intentions.
         </p>
         <div
           id="waitlist"
-          className="flex flex-col items-center gap-[13px] mt-[34px] w-full"
+          className="flex flex-col items-center gap-[13px] mt-9 w-full"
         >
           <WaitlistForm location="hero" />
         </div>
@@ -109,18 +108,20 @@ export default function Home() {
           <span className="whitespace-nowrap">Apple Silicon</span>
         </div>
 
-        <Reveal className="mt-[62px] max-w-[980px] mx-auto">
-          <video
-            className="w-full aspect-video rounded-[16px] border border-line2 shadow-[0_40px_90px_-30px_rgba(0,0,0,.85)] bg-[#0b0d10]"
-            preload="metadata"
-            playsInline
-            autoPlay
-            muted
-            loop
-            aria-label="Trace app demo"
-          >
-            <source src="/demo.mp4" type="video/mp4" />
-          </video>
+        <Reveal className="mt-14 max-w-[900px] mx-auto">
+          <div className="rounded-[16px] border border-line2 overflow-hidden bg-[#0b0d10] shadow-[0_40px_90px_-30px_rgba(0,0,0,.85)]">
+            <video
+              className="w-full aspect-video block"
+              preload="metadata"
+              playsInline
+              autoPlay
+              muted
+              loop
+              aria-label="Trace app demo"
+            >
+              <source src="/demo.mp4" type="video/mp4" />
+            </video>
+          </div>
         </Reveal>
       </header>
 
@@ -386,11 +387,7 @@ export default function Home() {
               background: "linear-gradient(180deg,var(--panel-2),var(--panel))",
             }}
           >
-            <HeatmapInteractive
-              levels={levels}
-              active={active}
-              months={months}
-            />
+            <HeatmapInteractive cells={heatmapCells} />
           </Reveal>
 
           <p
@@ -816,12 +813,6 @@ export default function Home() {
           </p>
           <div className="flex flex-col items-center gap-[13px] mt-8 w-full">
             <WaitlistForm location="final_cta" />
-            <a
-              className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
-              href="#top"
-            >
-              Back to top
-            </a>
           </div>
           <div className="mt-[22px] font-mono text-[12.5px] text-ink-faint flex gap-[10px] justify-center flex-wrap items-center">
             <span className="whitespace-nowrap">macOS 14 Sonoma or later</span>
@@ -961,7 +952,7 @@ function CmdItem({
 }) {
   return (
     <div className="grid grid-cols-[170px_1fr] gap-[18px] items-baseline px-1 py-[13px] border-b border-line">
-      <span className="text-ink text-[14px] font-medium">{syn}</span>
+      <span className="font-mono text-ink text-[14px] font-medium">{syn}</span>
       <span className="text-ink-dim text-[13px] font-sans">{desc}</span>
     </div>
   );
