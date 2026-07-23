@@ -12,7 +12,10 @@ export const SITE_URL = (
 export const APP_VERSION = "0.10.0";
 export const DMG_FILENAME = "Trace-Installer.dmg";
 export const DMG_PATH = `/downloads/${DMG_FILENAME}`;
+export const BETA_DMG_FILENAME = "Trace-Beta-Installer.dmg";
+export const BETA_DMG_PATH = `/downloads/${BETA_DMG_FILENAME}`;
 export const BETA_DOWNLOAD_ROUTE = "/download-beta-access";
+export const FULL_ACCESS_DOWNLOAD_ROUTE = "/full-access-request";
 
 export const WAITLIST_SUCCESS_MESSAGE =
   "We'll let you know once the app is out for launch.";

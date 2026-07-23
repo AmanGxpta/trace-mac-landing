@@ -1,10 +1,14 @@
-import { DMG_FILENAME, DMG_PATH } from "@/lib/site";
+import { BETA_DMG_FILENAME, BETA_DMG_PATH } from "@/lib/site";
 import { readFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const filePath = path.join(process.cwd(), "public", DMG_PATH);
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    BETA_DMG_PATH.replace(/^\//, ""),
+  );
 
   try {
     const file = await readFile(filePath);
@@ -12,7 +16,7 @@ export async function GET() {
     return new NextResponse(file, {
       headers: {
         "Content-Type": "application/x-apple-diskimage",
-        "Content-Disposition": `attachment; filename="${DMG_FILENAME}"`,
+        "Content-Disposition": `attachment; filename="${BETA_DMG_FILENAME}"`,
         "Cache-Control": "private, no-cache",
       },
     });
