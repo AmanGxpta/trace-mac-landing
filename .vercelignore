@@ -1,0 +1,5 @@
+# Keep local secrets out of Vercel uploads (CLI deploy includes gitignored files).
+.env
+.env.*
+!.env.example
+data
