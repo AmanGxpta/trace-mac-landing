@@ -6,11 +6,16 @@
  * Open Graph image URLs, JSON-LD) is derived from this — get it right once.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://traceapp.naviteklabs.com"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://justrytrace.app"
 ).replace(/\/$/, "");
 
 export const APP_VERSION = "0.10.0";
-export const DMG_PATH = `/downloads/Trace-${APP_VERSION}.dmg`;
+export const DMG_FILENAME = "Trace-Installer.dmg";
+export const DMG_PATH = `/downloads/${DMG_FILENAME}`;
+export const BETA_DOWNLOAD_ROUTE = "/download-beta-access";
+
+export const WAITLIST_SUCCESS_MESSAGE =
+  "We'll let you know once the app is out for launch.";
 
 export const site = {
   name: "Trace",

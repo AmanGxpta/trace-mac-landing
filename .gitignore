@@ -20,6 +20,9 @@
 # production
 /build
 
+# waitlist signups (stored locally via /api/waitlist)
+/data/waitlist.json
+
 # misc
 .DS_Store
 *.pem

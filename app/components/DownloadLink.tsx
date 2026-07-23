@@ -14,12 +14,21 @@ export default function DownloadLink({
   className?: string;
   children: React.ReactNode;
 }) {
+  const fileName = href.split("/").pop() ?? "Trace-Installer.dmg";
+
   return (
     <a
       href={href}
       download
       className={className}
-      onClick={() => sendGAEvent("event", "download_click", { location })}
+      onClick={() =>
+        sendGAEvent("event", "download_click", {
+          location,
+          file_name: fileName,
+          file_extension: "dmg",
+          link_url: href,
+        })
+      }
     >
       {children}
     </a>

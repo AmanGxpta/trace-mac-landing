@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Reveal from "./components/Reveal";
 import DownloadLink from "./components/DownloadLink";
+import WaitlistForm from "./components/WaitlistForm";
 import HeatmapInteractive from "./components/HeatmapInteractive";
 import { buildHeatmap } from "@/lib/heatmap";
-import { FaApple } from "react-icons/fa";
-
-const DMG_HREF = "/downloads/Trace-Installer.dmg";
+import { BETA_DOWNLOAD_ROUTE } from "@/lib/site";
 
 export default function Home() {
   const { levels, active, months } = buildHeatmap();
@@ -69,14 +68,12 @@ export default function Home() {
             >
               Changelog
             </a>
-            <DownloadLink
-              location="nav"
+            <a
+              href="#waitlist"
               className="font-mono text-[13.5px] font-semibold inline-flex items-center gap-[9px] px-4 py-[9px] rounded-[9px] cursor-pointer border border-transparent transition-all duration-200 bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px whitespace-nowrap"
-              href={DMG_HREF}
             >
-              <FaApple />
-              Download
-            </DownloadLink>
+              Join waitlist
+            </a>
           </div>
         </div>
       </nav>
@@ -98,30 +95,18 @@ export default function Home() {
           and filter your work, run a focus timer, jump into Cursor — and watch
           a per-project heatmap built from your real work, not your intentions.
         </p>
-        <div className="flex gap-[13px] justify-center flex-wrap mt-[34px]">
-          <DownloadLink
-            location="hero"
-            className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] cursor-pointer border border-transparent bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px transition-transform duration-[120ms] whitespace-nowrap"
-            href={DMG_HREF}
-          >
-            <FaApple />
-            Download for Free
-          </DownloadLink>
-          <a
-            className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
-            href="#commands"
-          >
-            See the commands
-          </a>
+        <div
+          id="waitlist"
+          className="flex flex-col items-center gap-[13px] mt-[34px] w-full"
+        >
+          <WaitlistForm location="hero" />
         </div>
         <div className="mt-[18px] font-mono text-[12.5px] text-ink-faint flex gap-[10px] justify-center flex-wrap items-center">
           <span className="whitespace-nowrap">Free</span>
           <span className="w-[3px] h-[3px] rounded-full bg-ink-faint opacity-60" />
           <span className="whitespace-nowrap">macOS 14 Sonoma+</span>
           <span className="w-[3px] h-[3px] rounded-full bg-ink-faint opacity-60" />
-          <span className="whitespace-nowrap">Apple Silicon &amp; Intel</span>
-          <span className="w-[3px] h-[3px] rounded-full bg-ink-faint opacity-60" />
-          <span className="whitespace-nowrap">.dmg · 3.3&nbsp;MB</span>
+          <span className="whitespace-nowrap">Apple Silicon</span>
         </div>
 
         <Reveal className="mt-[62px] max-w-[980px] mx-auto">
@@ -824,19 +809,13 @@ export default function Home() {
             Start keeping an honest record.
           </h2>
           <p className="mt-5 mx-auto text-ink-dim max-w-[50ch] text-[17px]">
-            Download Trace, drag it to Applications, and log your first{" "}
+            Join the waitlist and we&apos;ll let you know when Trace is ready.
+            Drag it to Applications and log your first{" "}
             <span className="text-accent font-mono">/done</span> in the next
             five seconds.
           </p>
-          <div className="flex gap-[13px] justify-center flex-wrap mt-8">
-            <DownloadLink
-              location="final_cta"
-              className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-transparent bg-accent text-[#06140b] shadow-[0_0_0_1px_color-mix(in_oklab,var(--accent)_60%,transparent),0_8px_30px_-10px_color-mix(in_oklab,var(--accent)_60%,transparent)] hover:-translate-y-px transition-transform duration-[120ms] whitespace-nowrap"
-              href={DMG_HREF}
-            >
-              <FaApple />
-              Download for Free
-            </DownloadLink>
+          <div className="flex flex-col items-center gap-[13px] mt-8 w-full">
+            <WaitlistForm location="final_cta" />
             <a
               className="font-mono text-[14.5px] font-semibold inline-flex items-center gap-[9px] px-6 py-[14px] rounded-[11px] border border-line2 text-ink hover:bg-white/[0.04] hover:border-white/[0.22] transition-all duration-200 whitespace-nowrap"
               href="#top"
@@ -900,7 +879,7 @@ export default function Home() {
                 Changelog
               </a>
               <DownloadLink
-                href={DMG_HREF}
+                href={BETA_DOWNLOAD_ROUTE}
                 location="footer"
                 className="whitespace-nowrap hover:text-ink transition-colors"
               >
