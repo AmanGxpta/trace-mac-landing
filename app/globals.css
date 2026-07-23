@@ -124,6 +124,7 @@ body::after {
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes pulse { 50% { opacity: .35; } }
 @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 
 .row-enter { animation: rowin .5s cubic-bezier(.2,.8,.2,1); }
 .cli-cursor {

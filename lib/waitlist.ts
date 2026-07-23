@@ -1,13 +1,4 @@
-import { mkdir, readFile, writeFile } from "fs/promises";
-import path from "path";
-
-const WAITLIST_PATH = path.join(process.cwd(), "data", "waitlist.json");
-
-interface WaitlistEntry {
-  email: string;
-  createdAt: string;
-  source?: string;
-}
+import { prisma } from "@/lib/prisma";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,26 +16,12 @@ export async function addToWaitlist(
     throw new Error("Invalid email address");
   }
 
-  await mkdir(path.dirname(WAITLIST_PATH), { recursive: true });
-
-  let entries: WaitlistEntry[] = [];
-  try {
-    const raw = await readFile(WAITLIST_PATH, "utf8");
-    entries = JSON.parse(raw) as WaitlistEntry[];
-  } catch {
-    entries = [];
-  }
-
-  const alreadyJoined = entries.some(
-    (entry) => entry.email === normalizedEmail,
-  );
-  if (alreadyJoined) return;
-
-  entries.push({
-    email: normalizedEmail,
-    createdAt: new Date().toISOString(),
-    source,
+  await prisma.waitlistSignup.upsert({
+    where: { email: normalizedEmail },
+    update: {},
+    create: {
+      email: normalizedEmail,
+      source,
+    },
   });
-
-  await writeFile(WAITLIST_PATH, JSON.stringify(entries, null, 2));
 }

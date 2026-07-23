@@ -20,9 +20,6 @@
 # production
 /build
 
-# waitlist signups (stored locally via /api/waitlist)
-/data/waitlist.json
-
 # misc
 .DS_Store
 *.pem
@@ -43,3 +40,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma

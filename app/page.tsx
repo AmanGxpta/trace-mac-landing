@@ -34,7 +34,7 @@ export default function Home() {
             />
             <span>trace</span>
             <span className="text-[11px] text-ink-faint font-medium px-[6px] py-[1px] border border-line2 rounded-[5px]">
-              v1.10.1
+              v1.11.1
             </span>
           </a>
           <div className="flex items-center gap-7">
