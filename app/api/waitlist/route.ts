@@ -1,4 +1,4 @@
-import { addToWaitlist } from "@/lib/waitlist";
+import { addToWaitlist, isValidEmail } from "@/lib/waitlist";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -30,12 +30,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
+  if (!isValidEmail(email.trim().toLowerCase())) {
+    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+  }
+
   try {
     await addToWaitlist(email, source);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to join waitlist";
-    return NextResponse.json({ error: message }, { status: 400 });
+    console.error("[waitlist]", error);
+    return NextResponse.json(
+      { error: "Couldn’t join the waitlist. Please try again." },
+      { status: 500 },
+    );
   }
 }
