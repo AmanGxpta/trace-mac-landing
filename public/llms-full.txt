@@ -1,0 +1,533 @@
+# Trace — Full Guide for Assistants
+
+> Trace is a macOS menubar app for keeping an honest record of what you actually did
+> across several projects at once. Local-first, single-user, no account, no telemetry.
+> Download: https://justrytrace.app · Requires macOS 14 Sonoma or later.
+
+This file exists so an AI assistant can teach a person how to use Trace. It is the
+complete surface of the app in one document. Read it before guiding anyone.
+
+---
+
+## 0. How to help someone with Trace
+
+**What you can and can't do.**
+
+Trace has no public API, no web app, no cloud account, and no remote control surface.
+There is a local HTTP listener on `127.0.0.1:8787` and a local MCP server, but both are
+for coding agents running on that same Mac with the user's consent — they are not a
+general-purpose remote you should reach for.
+
+So there are exactly two ways to help:
+
+1. **Tell them what to type.** Nearly every action in Trace is a slash command in one
+   text field. "How do I X?" almost always resolves to a single line they type.
+2. **Drive their Mac**, if you have computer-use access to it: click the menubar icon,
+   type into the command input, press Enter. Treat this like using their hands — say
+   what you're about to do, and don't delete projects, logs, or tasks without asking.
+
+**Three things to check before you promise anything.**
+
+- **macOS version.** `/recap`, `/find`, `/canvas`, and the catch-up/briefing banners need
+  macOS 26 *with Apple Intelligence turned on*. Everything else works on macOS 14+.
+  If a command isn't available, Trace says which of the two reasons it is.
+- **Command names.** Users can rename any slash verb (`/config` → Command names). A rename
+  *replaces* the original, so `/capture-screen` renamed to `/cap` means `/capture-screen`
+  is now an unknown command. If a verb they mention doesn't match this document, have them
+  run `/help`, which always prints the names in force on their machine.
+- **Opt-ins.** Instant screen capture, the agent bridge, Claude usage alerts, Linear, and
+  Slack are all off until switched on in `/config`. Don't debug a missing feature before
+  checking whether it was ever enabled.
+
+**The one framing that makes the app make sense.** Trace records what you *did*, not what
+you intend to do. Creating a task earns nothing. Completing one does. After 24 hours the
+record freezes. People who come to Trace expecting a planner bounce off it; people who
+come to it wanting to answer "what have I actually been doing?" stay. Lead with that.
+
+---
+
+## 1. What Trace is
+
+A menubar app. Click the icon (or press ⌘⇧L from anywhere), type, press Enter, close it.
+Sessions are meant to last five seconds.
+
+It builds per-project, GitHub-style activity heatmaps starting from the day each project
+was created, so the user can see honestly where their attention has gone.
+
+**Who it's for:** solo operators running several things at once — indie hackers,
+researchers, freelancers, PhD students, writers. Anyone juggling more than two projects
+who occasionally loses track of which one they've been neglecting.
+
+**What it is not:** not a planner (no due dates, reminders, or calendar), not a team tool,
+not a knowledge base, not gamified. One person, one machine.
+
+**Publisher:** Navitek Labs. Proprietary software, © 2026 Aman Gupta.
+
+---
+
+## 2. Install and first run
+
+1. Download the `.dmg` from https://justrytrace.app (universal build, Apple Silicon and
+   Intel, a few MB).
+2. Drag Trace into `/Applications` and launch it.
+3. It appears in the **menubar**. There is no Dock icon and no app window — this surprises
+   first-time users, so say it up front.
+4. **Onboarding runs first and must be completed** before the menubar UI is available. It
+   is a self-driving tour: a director script walks the real UI through welcome, short
+   demos, the command guide, and the permission prompts, seeded with demo projects that
+   carry backdated history so every screen has plausible data.
+5. Permissions it may ask for, and why:
+   - **Accessibility** — powers the onboarding tour's synthesised clicks and keystrokes,
+     and the global ⌘⇧L hotkey.
+   - **Screen Recording** — only if they turn on Instant Screen Capture (`/config`).
+   - **Microphone** — only for voice input (Control+D) or capture with mic audio.
+   - **Notifications** — for timers and the alert system.
+6. Recommended immediately after: open Trace, run `/new <project name>`, then `/log`
+   something. A project with one entry in it is far easier to explain than an empty app.
+
+**Where the data lives:** `~/Library/Application Support/Trace/store.sqlite`. Journal
+images sit in `journal-images/`, task images in `task-images/`, screen-capture buffers in
+`replay-buffer/`, weekly reports in `weekly/`.
+
+---
+
+## 3. The UI, screen by screen
+
+Trace is a popover with a command input pinned at the bottom of every screen. The views:
+
+**Project list** — the home screen. One row per project, each with a colour dot, staleness
+("3d since you logged anything"), optional tags, and any live dev-server ports. Projects
+fade visually the longer they go untouched. When something has been logged today, the dot
+becomes a checkmark. Header buttons open the all-projects heatmap, the timers, and the
+temporary priorities checklist.
+
+**Project focus (kanban)** — opened by selecting a project. Two columns, **Pending** and
+**Done**, with section headers dividing both. A header carries the project name, the
+**Active** toggle (this is how you archive and restore — there is no slash command for
+it), and the developer shortcuts. Drag to reorder pending tasks. Double-click a pending
+task to edit it inline; completed tasks are read-only.
+
+**Journal** — timestamped notes for the project, newest first. If the project is linked to
+a folder that's a git repo, commits appear inline with the notes so code history and
+handwritten notes share one timeline. `/agent-logs` switches to a separate lane holding
+logs an agent wrote and the user accepted; Esc goes back.
+
+**Today** — every task completion and journal entry logged across all projects today,
+including temporary priorities, in order, colour-coded by project.
+
+**Temporary priorities** — a daily scratchpad for work that doesn't belong to a project.
+Today's list clears at midnight; `/temp-logs` reveals the full per-day archive.
+
+**Timers** — preset focus-timer tiles (Pomodoro-style). A running timer counts down in the
+menubar while the popover is closed; on finish, a green outline animates around the screen
+edge and the menubar briefly shows "Finished".
+
+**Heatmaps** — every project has one from its creation date to today, with a stats header
+(tasks done, pending, logs, longest streak). Click any cell to see what was logged that
+day. From the project list header, a **Combined** heatmap across all visible projects sits
+above individual ones; it respects the current filter and active/archived context.
+
+---
+
+## 4. Slash commands — complete reference
+
+Type `/` in the command input to autocomplete. Type `#` to autocomplete project names.
+Project names containing spaces are quoted: `/task #"My Project" fix the parser`.
+`/help` lists everything inline, under whatever names are currently in force.
+
+### Projects
+
+| Command | What it does |
+| --- | --- |
+| `/new <name>` | Create a project |
+| `/rename-project <name>` | Rename the project in focus |
+| `/delete-project` | Delete the project in focus (asks to confirm) |
+| `/add-tag <tag>` | Add a tag to the project in focus |
+| `/remove-tag <tag>` | Remove a tag |
+| `/filter <tag>` | Show only projects with that tag |
+| `/filter` | Clear the tag filter |
+| `/show-all` | Show active and archived projects together |
+| `/show-active` | Show only active projects |
+| `/show-tags` / `/hide-tags` | Show or hide tags on project rows |
+
+Archiving is **not** a slash command — use the **Active** toggle in the project focus
+header. Projects created in the last 10 days carry a derived `new` tag automatically.
+
+### Tasks and journal
+
+| Command | What it does |
+| --- | --- |
+| `/task <text>` | Create a pending task in the project in focus |
+| `/done <text>` | Create and immediately complete a task |
+| `/log <text>` | Add a journal entry (drop or paste images to attach them) |
+| `/create-section <name>` | Add a section header in the pending column |
+| `/remove-section <name>` | Remove a section header — its tasks stay, ungrouped |
+| `/task #project <text>` | Same, into a named project, from anywhere |
+| `/done #project <text>` | Same |
+| `/log #project <text>` | Same |
+| `/temp-logs` | In Priorities: toggle today's list vs. the daily history |
+| `/agent-logs` | In Journal: open the lane of logs an agent wrote |
+| `/inbox` | Everything that arrived on its own, across every project, in one list |
+
+Pending tasks age visually — fresh, then aging, then rotting — based on how long they've
+sat. URLs in task text are clickable. A task completed in the last 24 hours can be
+unchecked; after that the record is immutable.
+
+### On-device AI (macOS 26 + Apple Intelligence)
+
+| Command | What it does |
+| --- | --- |
+| `/recap` | Honest AI summary of today. From the project list it covers every active project; inside a project, just that one |
+| `/recap week` | Same scoping, last 7 days |
+| `/recap month` | Same scoping, last 30 days |
+| `/find <question>` | Ask the log anything — semantic search plus a short grounded answer with sources |
+| `/find #project <question>` | Scoped to one project |
+| `/canvas` | Traces a linked git repo's commit history into a draggable, zoomable feature map (areas → features → commits) |
+
+Long logs are digested in chronological parts and then combined, so a heavy month is
+covered in full rather than truncated. `/canvas` caches its result until `HEAD` moves.
+`/find` still returns ranked matches without Apple Intelligence — you lose the written
+answer, not the search.
+
+### Screen capture
+
+| Command | What it does |
+| --- | --- |
+| `/capture-screen` | Save an instant replay of what just happened |
+| `/capture-screen 5m` | Force the length — `90`, `90s`, `5m`, `1m30s` all parse |
+| `/capture-screen #project` | File the clip into a named project |
+
+Off until enabled in `/config`. See §7.
+
+### Developer and reporting
+
+| Command | What it does |
+| --- | --- |
+| `/cli <command>` | Run it in the focused project's folder, in the user's terminal |
+| `/cli #project <cmd>` | Run it in a named project's folder |
+| `/weekly` | Build the weekly report (see §9) |
+| `/trust` | How often agent decisions were followed vs. overruled |
+| `/config` | In a project: the checkmark threshold. From the list: power-user opt-ins |
+| `/help` | Show every command inline |
+
+### Claude usage
+
+| Command | What it does |
+| --- | --- |
+| `/claude-usage` | Current Claude plan usage, in-app. Needs a claude.ai session key |
+| `/claude-usage-advanced` | What's left of the current 5-hour window and the week behind it, by project and model. Built from Claude Code's own transcripts, so it needs no session key and works with the network off |
+| `/claude-key <key>` | Store the claude.ai session key that `/claude-usage` and the usage alerts read |
+
+### Integrations
+
+| Command | What it does |
+| --- | --- |
+| `/linear-connect [TEAM]` | Bind a Linear team/project; bare opens a picker |
+| `/linear-disconnect` | Stop syncing, keep the tasks as your own |
+| `/linear-sync` | Pull now |
+| `/slack-connect` | Bind a Slack channel to watch |
+| `/slack-disconnect` | Stop watching |
+| `/slack-sync` | Read the channel now |
+
+---
+
+## 5. On-device AI, and what's gated
+
+Everything in this section runs on Apple's Foundation Models through a vendored
+`swift-ai-sdk`. **No network, no API key, nothing leaves the Mac.** That is exactly why
+these features are gated on Apple's on-device framework rather than a cloud provider.
+
+Beyond the commands above, two things appear on their own:
+
+- **Catch-up** — opening a project idle for 3+ days shows a "Where did I leave off?"
+  banner summarising recent journals and tasks.
+- **Briefing** — opening Trace after 6+ hours away offers a "What's on my plate?" summary
+  of pending work across active projects plus today's priorities.
+
+Availability matrix:
+
+| | macOS 14–15 | macOS 26, Apple Intelligence off | macOS 26, on |
+| --- | :---: | :---: | :---: |
+| Projects, tasks, journal, sections, tags | yes | yes | yes |
+| Heatmaps and history | yes | yes | yes |
+| Slash commands, keyboard nav, ⌘⇧L | yes | yes | yes |
+| Timers, notifications, export | yes | yes | yes |
+| Voice input (Control+D) | yes | yes | yes |
+| Screen capture | yes | yes | yes |
+| Agent bridge / MCP | yes | yes | yes |
+| `/recap`, `/find`, `/canvas` | no | no | yes |
+
+When a gated command is unavailable, Trace distinguishes "requires macOS 26 or later" from
+"Apple Intelligence isn't turned on" and points at **System Settings › Apple Intelligence
+& Siri** for the second. Don't let a user reinstall the app over this.
+
+---
+
+## 6. Voice input
+
+Inside a project the user can log by speaking instead of typing:
+
+- **Control+D (hold)** — push-to-talk: records while held, transcribes on release.
+- **Mic button** on the command input — tap to start, tap pause to stop and transcribe.
+
+The first word selects the command: say **"Task …"** for a pending task or **"Log …"** for
+a journal entry; the rest becomes the text.
+
+**This is the one feature that contacts a third party.** Audio goes to OpenAI Whisper at
+`api.openai.com` for transcription, using an API key the user supplies, stored in the
+macOS Keychain. It's opt-in, prompted on first use, and never used unless invoked.
+Everything else in Trace is local. Trace has no telemetry or analytics of any kind.
+
+---
+
+## 7. Instant screen capture
+
+A game-console-style instant replay for the Mac. A rolling buffer of screen and system
+audio records quietly; nothing is ever saved unless the user asks. Enable under `/config`
+→ Instant Screen Capture.
+
+Two separate dials, which is the thing to get across:
+
+- **Retention** — how far back the buffer can physically reach, 1–30 minutes, default 10.
+  This costs disk continuously; `/config` shows a live "~430 MB on disk" estimate as the
+  slider moves.
+- **Default capture length** — how much of that a `/capture-screen` saves, default 2
+  minutes. Costs nothing extra, and can be overridden per capture (`/capture-screen 5m`),
+  clamped to what's actually retained.
+
+After the fact a saved clip is still editable: **Extend** reaches further back while the
+footage is still buffered (so guessing too short is recoverable), and **Trim to last N**
+re-exports a smaller, shareable clip. Optionally the mic is recorded too.
+
+Privacy model: the buffer lives in a disposable `replay-buffer/` directory, excludes
+Trace's own windows, and is wiped on stop, on quit, and at next launch. The only thing
+that leaves the Mac is a clip the user explicitly shares. A subtle dot on the project list
+shows when the buffer is live.
+
+Related: **Hide Trace while screen sharing** (`/config`) keeps Trace's window out of
+recordings and calls — Zoom, Meet, QuickTime — while staying fully visible to the user.
+
+---
+
+## 8. The coding-agent bridge and MCP
+
+Off by default. `/config` → **Agent bridge**.
+
+When on, coding agents see the project's open tasks the moment the user opens that project
+in a linked folder, and can start one or propose it's done. **Every write asks the user
+first** — in the terminal if the agent can prompt there, otherwise in Trace itself.
+
+Turning it on registers Trace as a **local MCP server** and adds a session-start hook to
+each agent already set up on that Mac — Claude Code, Codex, Grok Build, and Cursor.
+Turning it off removes both. Agents reach Trace over loopback (`127.0.0.1:8787`, bearer
+token), so enabling the bridge also turns on **Start Trace at login**: a Trace that isn't
+running isn't a failing bridge, it's an absent one, and the tools would silently vanish
+from the session.
+
+The MCP tools an agent gets:
+
+| Tool | What it does |
+| --- | --- |
+| `trace_list_tasks` | Machine inventory of open tasks — for the agent's own ranking, not for showing a human |
+| `trace_pick_task` | Puts a real picker in front of the human; they tick several and attach context, and everything ticked starts |
+| `trace_start_task` | Moves a task to in-progress and starts its timer, only after the human picked it |
+| `trace_complete_task` | Queues a completion for the human to confirm — it does not mark anything done |
+| `trace_propose_task` | Parks a candidate task for later acceptance, without prompting |
+| `trace_propose_log` | Offers an honest account of what the agent did, for the human's journal |
+| `trace_propose_decision` | Records a choice the human made and, crucially, the options they turned down |
+| `trace_record_decision` | Records a call the agent made itself, without asking |
+| `trace_recent_decisions` | Reads decisions already on file, with ids |
+| `trace_attribute_outcome` | Marks that a recorded decision later cost something, or paid off |
+| `trace_triage_proposals` | Puts the waiting proposals in front of the human to settle |
+
+Two `/config` companions: **Bring completions to me** makes Trace open with the confirm
+rather than waiting quietly in the menubar, and stays up for the rest of the queue; and a
+tally of **what agent prompts have cost so far** — accepted, declined, ignored, and an
+"worth asking" percentage per prompt type, so the interruption cost is measured rather
+than argued about.
+
+Accepted agent logs live in their own lane (`/agent-logs`) and never count as the user's
+own activity — the heatmap stays honest.
+
+---
+
+## 9. Integrations and reports
+
+**Linear.** `/linear-connect` binds a Linear team *and project*; issues assigned to the
+user mirror in as native Trace tasks with an origin badge, a link back, timers, and git
+backlinks. Trace's store stays authoritative for execution: a pull refreshes content and
+may move a task between pending and in-progress, but never writes `done`, never touches a
+running timer, and never reorders the board. **Status is the only field that goes back**,
+behind a confirm that names both states — unless the per-project "Update Linear without
+asking" toggle is on, and even then a divergence guard stops if someone moved the issue.
+Auth is OAuth2 against an application the user registers in their own Linear workspace;
+Trace ships no client secret and brokers nothing through its own infrastructure. Pulls run
+on a background heartbeat, throttled to once every 3 minutes per project.
+
+**Slack.** Trace watches channels bound with `/slack-connect` and proposes the commitments
+it finds. Nothing is written until accepted, and **Trace never posts, reacts, or replies**
+in the channel. Tokens live in the Keychain.
+
+**Claude usage.** Two different things, and it's worth being precise about which one a
+user needs. `/claude-usage` shows current plan usage in-app and reads it from claude.ai,
+so it needs a session key and a network. `/claude-usage-advanced` shows what's left of the
+current 5-hour window and the week behind it, broken down by project and model — it is
+built from Claude Code's own transcripts on disk, so it needs **no session key and works
+with the network off**. If someone just wants to know where their tokens went, send them
+to the advanced panel and skip the key entirely.
+
+Alerts (opt-in) fire at 40/75/90% of
+the window, every 1.5h while under 80% with limit still available, and when the window
+resets. Paid claude.ai plans only. The reader renders the claude.ai usage page invisibly
+and reads the numbers, like checking by hand, using a session key the user pastes from
+their browser cookies into the Keychain — if the page changes, alerts go quiet until an
+update. Treat that session key as a full-access token and say so.
+
+**Weekly report** (`/weekly`) — the one artifact Trace makes that is meant to leave the
+machine. It composes a week from three records that are never otherwise in one place: what
+shipped (commits across every linked path), what the agents did (the agent journal lane),
+and what was taken on because someone asked (Slack-sourced tasks, still carrying the
+sentence that started them). Saved under `~/Library/Application Support/Trace/weekly/`.
+
+**Trust panel** (`/trust`) — plain arithmetic over rows already on disk, no model runs. It
+lists the decisions the user **overruled**, not all of them: the followed ones are already
+visible in the recap and journal and have nothing to teach.
+
+---
+
+## 10. Developer shortcuts and live ports
+
+Link a project to a folder on disk once, from the project focus header. Then:
+
+- **Open in Cursor** — opens the linked folder in Cursor.
+- **Open in cmux** — opens the folder in cmux, as a named workspace where socket access
+  allows.
+- **GitHub** — resolves `git origin` and opens the repo in the browser. First use asks
+  for a preferred browser; right-click the button to change it.
+
+Multiple directories and repositories per project are supported; the GitHub shortcut lists
+every repo across them. An application picker means shortcut targets respect which apps are
+actually installed.
+
+**Live dev-server ports.** Trace scans for listening ports whose working directory matches
+a linked project folder. Active ports show as tags on the project row and in a row under
+the project focus header. Click a port tag to kill that process.
+
+---
+
+## 11. Config reference
+
+`/config` from the project list — power-user opt-ins:
+
+- **Claude usage alerts** (+ session key), and the experimental usage reader
+- **Read a Slack channel**
+- **Sync a Linear board**
+- **Command names** — rename any slash verb; renaming *replaces* the original
+- **Track time in Priorities** — adds an in-progress step, so one click starts a task and
+  a timer and the next completes it, with the elapsed time shown
+- **Agent bridge**, **Bring completions to me**, **Start Trace at login**
+- **Hide Trace while screen sharing**
+- **Instant Screen Capture** — mic audio, retention, default capture length
+
+`/config` inside a project — how many actions earn that project its daily checkmark.
+
+---
+
+## 12. Keyboard shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| ⌘⇧L (global) | Open Trace from anywhere |
+| ↑ ↓ | Move selection in the project list or kanban |
+| Enter | Open the selected project |
+| Tab | Switch between Pending and Done |
+| Space | Toggle task completion |
+| Escape | Close the popover (from the list), go back to the list (from a project), or leave the command input for keyboard navigation |
+| Control+D (hold, in a project) | Push-to-talk voice input |
+| ↑ ↓ in the command input | Cycle command history |
+
+⌘⇧L opens Trace ready for arrow-key navigation; clicking the menubar icon opens it with
+the command input focused for typing. Left-click the icon to open or close; right-click
+(two-finger click) for a context menu with Quit.
+
+---
+
+## 13. Privacy and data
+
+- No account, no sign-in, no cloud sync, no telemetry, no analytics.
+- Core logging makes **no network requests at all**.
+- One SQLite file: `~/Library/Application Support/Trace/store.sqlite`.
+- Images under `journal-images/` and `task-images/`; screen buffers under `replay-buffer/`
+  (disposable, wiped on stop/quit/launch); reports under `weekly/`.
+- Secrets — OpenAI key, Slack tokens, Linear OAuth app, claude.ai session key — live in
+  the macOS Keychain, never in the database.
+- Outbound traffic only ever happens for features the user explicitly turned on: Whisper
+  transcription, Slack, Linear, and the claude.ai usage reader.
+- Backups and machine moves: copying `~/Library/Application Support/Trace/` carries
+  everything except the Keychain secrets, which have to be re-entered.
+
+---
+
+## 14. Troubleshooting
+
+**"I installed it but nothing opened."** There is no window and no Dock icon. Look in the
+menubar, top-right. If it isn't there, Trace may not have finished onboarding — relaunch
+from `/Applications`.
+
+**"A command says it's unavailable."** Read the message. Trace distinguishes "requires
+macOS 26 or later" from "Apple Intelligence isn't turned on". For the second, System
+Settings › Apple Intelligence & Siri.
+
+**"A command I know doesn't work."** Either it was renamed (`/config` → Command names; a
+rename replaces the old verb) or the feature is a `/config` opt-in that was never turned
+on. `/help` prints the truth for that machine.
+
+**"I can't uncheck a completed task."** Only within 24 hours. After that the record is
+immutable by design — that is the point of the app, not a bug.
+
+**"My heatmap looks emptier than my week felt."** Only completions and journal entries
+count. Creating tasks earns nothing, and accepted agent logs sit in a separate lane that
+deliberately doesn't count as the user's own activity.
+
+**"The agent bridge tools vanished mid-session."** Trace has to be running for agents to
+reach it over loopback. Check Trace is open, and that Start Trace at login is enabled — a
+build not running from `/Applications` can't register a login item at all.
+
+**"Claude usage alerts went quiet."** The reader parses the claude.ai page; if the page
+changed, alerts stop until an update. Also check the session key hasn't expired.
+
+**"Where did my screen recording go?"** Nothing is saved unless `/capture-screen` was run.
+The buffer wipes on quit and at next launch. If the clip was too short, **Extend** only
+works while the footage is still inside the retention window.
+
+**"Can my team use this?"** No. Trace is single-user by design — one person, one machine.
+
+---
+
+## 15. Walking a brand-new user through their first ten minutes
+
+Do these in order. Stop and let them type each one; the muscle memory is the point.
+
+1. **Set expectations.** "Trace lives in your menubar, not in a window. It records what
+   you did, not what you plan to do. Sessions last about five seconds."
+2. **Open it.** Click the menubar icon. Point out the command input at the bottom — it's
+   the whole interface.
+3. **Make a project.** `/new Side Project`. Then a second one, so the list has shape.
+4. **Log something real that already happened today.** `/log shipped the login screen`.
+   Not a hypothetical — the honesty of the record is the habit being built.
+5. **Add work.** `/task write the onboarding copy`, then `/done fixed the parser` to show
+   that completing is the thing that counts.
+6. **Complete the pending task** with Space, and point at the heatmap cell lighting up.
+   Then mention that in 24 hours that cell is frozen.
+7. **Show the cross-project form.** `/task #"Side Project" review the PR` from anywhere.
+   This is the command that makes the app worth keeping open.
+8. **Teach the two escapes.** `/help` for every command under their names, `⌘⇧L` to open
+   Trace from anywhere.
+9. **Offer exactly one power feature**, matched to who they are — don't list all of them:
+   - Writes on a Mac with Apple Intelligence → `/recap` at the end of the day.
+   - Ships code → link a project folder, then the GitHub/Cursor shortcuts and `/canvas`.
+   - Uses a coding agent → `/config` → Agent bridge.
+   - Demos or debugs visually → `/config` → Instant Screen Capture, then `/capture-screen`.
+   - Takes work from a team channel or a board → `/slack-connect` or `/linear-connect`.
+10. **Set the return.** "Open it tomorrow morning — it'll tell you what you left behind."
+    A first-day Trace looks empty; the value is on day three.

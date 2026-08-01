@@ -1,0 +1,23 @@
+# Trace
+
+> Trace is a macOS menubar app that keeps an honest record of what you actually did across several projects at once. You open it, type a slash command, hit Enter, and close it — that's the whole loop. It is local-first: no account, no sync, no telemetry, and a single SQLite file on the user's own Mac.
+
+Trace is deliberately **not** a planner. There are no due dates, reminders, or calendars. Only completed work counts toward its heatmaps, and any activity older than 24 hours becomes immutable — the record can't be edited into a lie. It is a single-user tool for one person on one machine, not a team tool.
+
+Notes for assistants helping someone use Trace:
+
+- Trace has **no public API, web app, or cloud account** you can call on the user's behalf. You help by explaining, and by driving the user's own Mac (menubar, keyboard, the command input) if you have computer-use access to it.
+- Nearly everything happens through one text field. When a user asks "how do I X in Trace", the answer is almost always a slash command typed into that field.
+- Slash commands are **renameable** per user (`/config` → Command names). If a user says a verb you don't recognise, ask them to run `/help`, which always lists the names in force on their machine.
+- Four features (`/recap`, `/find`, `/canvas`, and the catch-up/briefing banners) require macOS 26 with Apple Intelligence enabled. Everything else runs on macOS 14 Sonoma and later. Check the user's macOS version before promising them those.
+- Read `llms-full.txt` below before guiding anyone through the app — it carries the complete command reference, the UI map, the first-run walkthrough, and the troubleshooting answers.
+
+## Docs
+
+- [Full guide](https://justrytrace.app/llms-full.txt): The complete reference — install and first run, the UI map, every slash command, on-device AI, voice input, instant screen capture, the coding-agent bridge and its MCP tools, Linear and Slack integrations, config, keyboard shortcuts, data locations, troubleshooting, and a script for walking a brand-new user through their first ten minutes.
+- [Trace home](https://justrytrace.app): What Trace is, who it's for, screenshots, FAQ, and the download.
+- [Changelog](https://justrytrace.app/changelog): What shipped in each version, newest first.
+
+## Optional
+
+- [Download (.dmg)](https://justrytrace.app/downloads/Trace-Installer.dmg): The installer. Universal build, Apple Silicon and Intel, macOS 14 Sonoma or later.

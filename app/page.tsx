@@ -90,9 +90,7 @@ export default function Home() {
           <em className="not-italic text-accent">actually</em> did.
         </h1>
         <p className="max-w-[56ch] mx-auto mt-6 text-[clamp(16px,2.1vw,19px)] text-ink-dim leading-[1.62] [text-wrap:pretty]">
-          A macOS menubar app for people running several projects at once. Log
-          tasks and notes with slash commands in seconds — then watch a
-          per-project heatmap built from real work, not intentions.
+          Todoist on steroids for devs
         </p>
         <div
           id="waitlist"
