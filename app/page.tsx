@@ -86,12 +86,9 @@ export default function Home() {
           macOS menubar · keyboard-driven
         </span>
         <h1 className="font-sans font-bold text-[clamp(34px,6vw,66px)] leading-[1.03] tracking-[-0.028em] max-w-[15ch] mx-auto mt-6 [text-wrap:balance]">
-          An honest record of what you{" "}
-          <em className="not-italic text-accent">actually</em> did.
+          Todoist on Steroids for Devs
         </h1>
-        <p className="max-w-[56ch] mx-auto mt-6 text-[clamp(16px,2.1vw,19px)] text-ink-dim leading-[1.62] [text-wrap:pretty]">
-          Todoist on steroids for devs
-        </p>
+
         <div
           id="waitlist"
           className="flex flex-col items-center gap-[13px] mt-9 w-full"
