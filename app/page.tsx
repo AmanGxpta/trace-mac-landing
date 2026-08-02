@@ -86,7 +86,8 @@ export default function Home() {
           macOS menubar · keyboard-driven
         </span>
         <h1 className="font-sans font-bold text-[clamp(34px,6vw,66px)] leading-[1.03] tracking-[-0.028em] max-w-[15ch] mx-auto mt-6 [text-wrap:balance]">
-          Todoist on Steroids for Devs
+          An honest record of what you{" "}
+          <em className="not-italic text-accent">actually</em> did.
         </h1>
 
         <div
