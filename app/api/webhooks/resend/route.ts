@@ -8,6 +8,14 @@ export const dynamic = "force-dynamic";
 const FORWARD_TO = process.env.RESEND_FORWARD_TO;
 const FORWARD_FROM = process.env.RESEND_FORWARD_FROM ?? "support@justrytrace.app";
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 // Resend/Svix probes the endpoint with a GET before it'll save a webhook,
 // and real events only ever arrive as POST — so a plain 200 here is enough.
 export async function GET() {
@@ -54,11 +62,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not configured" }, { status: 500 });
   }
 
+  // passthrough must be off to inject a note — with it on (the default),
+  // forward() won't accept text/html at all and just relays the raw
+  // original, which buries the sender's address in headers most mail
+  // clients don't surface.
   try {
     await resend.emails.receiving.forward({
       emailId: event.data.email_id,
       to: FORWARD_TO,
       from: FORWARD_FROM,
+      passthrough: false,
+      text: `Forwarded from: ${event.data.from}\n`,
+      html: `<p>Forwarded from: <strong>${escapeHtml(event.data.from)}</strong></p>`,
     });
   } catch (error) {
     console.error("[resend-webhook] forward failed", error);
