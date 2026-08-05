@@ -8,6 +8,12 @@ export const dynamic = "force-dynamic";
 const FORWARD_TO = process.env.RESEND_FORWARD_TO;
 const FORWARD_FROM = process.env.RESEND_FORWARD_FROM ?? "support@justrytrace.app";
 
+// Resend/Svix probes the endpoint with a GET before it'll save a webhook,
+// and real events only ever arrive as POST — so a plain 200 here is enough.
+export async function GET() {
+  return NextResponse.json({ ok: true });
+}
+
 export async function POST(request: Request) {
   const payload = await request.text();
 
