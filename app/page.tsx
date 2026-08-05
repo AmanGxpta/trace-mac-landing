@@ -85,10 +85,13 @@ export default function Home() {
         <span className="font-mono text-[12.5px] tracking-[.16em] uppercase text-ink-faint inline-flex items-center gap-[9px] whitespace-nowrap before:content-[''] before:w-[6px] before:h-[6px] before:rounded-full before:bg-accent before:shadow-[0_0_10px_var(--accent)]">
           macOS menubar · keyboard-driven
         </span>
-        <h1 className="font-sans font-bold text-[clamp(34px,6vw,66px)] leading-[1.03] tracking-[-0.028em] max-w-[15ch] mx-auto mt-6 [text-wrap:balance]">
-          An honest record of what you{" "}
-          <em className="not-italic text-accent">actually</em> did.
+        <h1 className="font-sans font-bold text-[clamp(34px,6vw,66px)] leading-[1.03] tracking-[-0.028em] max-w-[19ch] mx-auto mt-6 [text-wrap:balance]">
+          The Personal Context Manager For Everyone
         </h1>
+        <p className="mt-5 mx-auto max-w-[62ch] text-ink-dim text-[17px] md:text-[18px] leading-[1.55] [text-wrap:pretty]">
+          Trace is a menubar app that brings your tasks, ideas, decisions and
+          work history together so you can resume work instantly.
+        </p>
 
         <div
           id="waitlist"

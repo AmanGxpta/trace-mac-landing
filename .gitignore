@@ -42,3 +42,7 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# Playwright verification artifacts (videos, traces, reports)
+/e2e/artifacts/
+/test-results/

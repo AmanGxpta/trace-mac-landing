@@ -76,11 +76,11 @@ export default async function Image() {
               maxWidth: 980,
             }}
           >
-            An honest record of what you actually did.
+            The Personal Context Manager For Everyone
           </div>
           <div style={{ fontSize: 30, color: "#9aa0a6", maxWidth: 920, lineHeight: 1.4 }}>
-            Log tasks and notes with slash commands in under five seconds — then
-            watch a per-project heatmap built from your real work.
+            Trace is a menubar app that brings your tasks, ideas, decisions and
+            work history together so you can resume work instantly.
           </div>
         </div>
 

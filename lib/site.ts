@@ -23,8 +23,8 @@ export const WAITLIST_SUCCESS_MESSAGE =
 export const site = {
   name: "Trace",
   publisher: "Navitek Labs",
-  tagline: "An honest record of what you actually did",
-  title: "Trace — An honest record of what you actually did",
+  tagline: "The Personal Context Manager For Everyone",
+  title: "Trace — The Personal Context Manager For Everyone",
   description:
     "Trace is a macOS menubar app for people running several projects at once. Log tasks and notes with slash commands in under five seconds — then watch a per-project heatmap built from your real work, not your intentions.",
   keywords: [
