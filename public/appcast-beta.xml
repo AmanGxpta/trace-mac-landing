@@ -8,13 +8,13 @@
     <description>Updates for Trace beta builds.</description>
     <language>en</language>
     <item>
-      <title>Version 1.14</title>
-      <pubDate>Thu, 06 Aug 2026 13:27:09 +0000</pubDate>
-      <sparkle:version>202608061322</sparkle:version>
-      <sparkle:shortVersionString>1.14</sparkle:shortVersionString>
+      <title>Version 1.15</title>
+      <pubDate>Fri, 07 Aug 2026 11:35:29 +0000</pubDate>
+      <sparkle:version>202608071129</sparkle:version>
+      <sparkle:shortVersionString>1.15</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
       <sparkle:releaseNotesLink>https://justrytrace.app/changelog</sparkle:releaseNotesLink>
-      <enclosure url="https://justrytrace.app/downloads/Trace-Beta-1.14-202608061322.zip" type="application/octet-stream" sparkle:edSignature="F3oP4KoWNrNk0oG/Q7CeAFGMRey/i3fXoMWQFjCDY0YxatMc9Wy10pUnrBTdMon/aH97SVmgt57iTNCac5qRDA==" length="10951220" />
+      <enclosure url="https://justrytrace.app/downloads/Trace-Beta-1.15-202608071129.zip" type="application/octet-stream" sparkle:edSignature="RnCRKdBEZFJOhlKPs+i8IkRaf/j8Z6zP7QAzjE79bP+5xicu1z2niyiozIj3Lf0dGo7uuV9vPyP3FVp/eepOBQ==" length="11013688" />
     </item>
   </channel>
 </rss>
