@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { decryptSerial } from "@/lib/serial";
 
 /**
  * The control plane behind /admin/installs.
@@ -40,22 +41,36 @@ export async function isAdmin(): Promise<boolean> {
   return !!got && constantTimeEquals(got, want);
 }
 
+/** Every attribute the cookie is written with, so clearing can match them. */
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/admin",
+} as const;
+
 export async function signIn(password: string): Promise<boolean> {
   const want = expected();
   if (!want || !constantTimeEquals(digest(password), want)) return false;
 
   (await cookies()).set(COOKIE, want, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    ...COOKIE_OPTIONS,
     maxAge: 60 * 60 * 24 * 30,
-    path: "/admin",
   });
   return true;
 }
 
+/**
+ * Overwrites with an expired cookie rather than calling `delete`.
+ *
+ * A cookie is identified by name *and* path, and `delete` did not reliably
+ * carry the `/admin` path this one is scoped to — so the browser kept it and
+ * signing out silently did nothing, which on a page that can switch someone's
+ * app off is the wrong thing to get subtly wrong. Writing the same attributes
+ * back with `maxAge: 0` is unambiguous.
+ */
 export async function signOut(): Promise<void> {
-  (await cookies()).delete({ name: COOKIE, path: "/admin" });
+  (await cookies()).set(COOKIE, "", { ...COOKIE_OPTIONS, maxAge: 0 });
 }
 
 // MARK: - Looking someone up
@@ -124,7 +139,7 @@ export async function findInstalls(query: string) {
     orderBy: { lastSeenAt: "desc" },
     take: 20,
   });
-  return rows;
+  return decorate(rows);
 }
 
 /** True when serial lookup can work at all — surfaced so the UI can say so. */
@@ -136,12 +151,61 @@ export function serialLookupConfigured(): boolean {
 
 export type InstallRow = Awaited<ReturnType<typeof listInstalls>>[number];
 
+/**
+ * Swaps the stored ciphertext for the serial itself.
+ *
+ * Done here, once, so no page ever holds a `serialCipher` it might render by
+ * accident — the views only ever see either a real serial or null.
+ */
+export function withSerial<T extends { serialCipher: string | null }>(
+  row: T,
+): Omit<T, "serialCipher"> & { serial: string | null } {
+  const { serialCipher, ...rest } = row;
+  return { ...rest, serial: decryptSerial(serialCipher) };
+}
+
+/** Hours after which an install counts as gone quiet rather than live. */
+export const QUIET_AFTER_HOURS = 48;
+
+/**
+ * Attaches how long ago an install was heard from.
+ *
+ * Computed here rather than in the page because reading the clock is impure,
+ * and a component that does it during render can produce a different answer
+ * every time React happens to re-run it. Fetching is the honest place for
+ * "what time is it now".
+ */
+function withFreshness<T extends { lastSeenAt: Date }>(row: T, now: number) {
+  const seconds = Math.floor((now - row.lastSeenAt.getTime()) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const seenAgo =
+    seconds < 90
+      ? "just now"
+      : minutes < 60
+        ? `${minutes}m ago`
+        : hours < 48
+          ? `${hours}h ago`
+          : `${Math.floor(hours / 24)}d ago`;
+
+  return { ...row, seenAgo, isQuiet: hours >= QUIET_AFTER_HOURS };
+}
+
+function decorate<T extends { serialCipher: string | null; lastSeenAt: Date }>(
+  rows: T[],
+) {
+  const now = Date.now();
+  return rows.map((row) => withFreshness(withSerial(row), now));
+}
+
 export async function listInstalls() {
-  return prisma.install.findMany({
+  const rows = await prisma.install.findMany({
     orderBy: { lastSeenAt: "desc" },
     select: {
       id: true,
       idSource: true,
+      serialCipher: true,
       note: true,
       version: true,
       build: true,
@@ -158,6 +222,7 @@ export async function listInstalls() {
       supersededById: true,
     },
   });
+  return decorate(rows);
 }
 
 /** The two numbers worth having above the table. */

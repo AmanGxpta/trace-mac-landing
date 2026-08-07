@@ -1,0 +1,252 @@
+/* ─────────────────────────────────────────────────────────────────────
+   Admin console.
+
+   A different room from the marketing site. The site is trying to persuade
+   someone; this is an instrument panel someone reads at speed while a
+   customer waits on the other end of a message. So: monospace as the display
+   face rather than an accent, tabular numerals everywhere a number can change,
+   hairline rules instead of cards, and colour reserved entirely for signal —
+   green means heard from recently, amber means gone quiet, red means switched
+   off. Nothing here is coloured for decoration.
+
+   It borrows the site's tokens so it still feels like the same company, and
+   overrides the two things the site does that are wrong in a control panel:
+   the custom cursor and the ambient background grid.
+   ──────────────────────────────────────────────────────────────────── */
+
+.admin-shell {
+  --sig-live: #4ade80;
+  --sig-quiet: #d9a441;
+  --sig-off: #f2705f;
+  --rule: rgba(255, 255, 255, 0.07);
+  --rule-strong: rgba(255, 255, 255, 0.14);
+
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+/* The site paints a decorative grid + glow on the body. In here it sits
+   behind live data and makes numbers harder to read, so it goes. */
+body:has(.admin-shell)::before,
+body:has(.admin-shell)::after {
+  display: none !important;
+}
+
+/* The site swaps in a custom cursor bitmap. That reads as a nice touch on a
+   landing page and as a broken pointer on a form you are trying to type in,
+   so the admin surface hands the system cursor back. */
+.admin-shell,
+.admin-shell * {
+  cursor: auto;
+}
+.admin-shell a,
+.admin-shell button,
+.admin-shell [role="button"],
+.admin-shell summary,
+.admin-shell label[for] {
+  cursor: pointer;
+}
+.admin-shell input,
+.admin-shell textarea {
+  cursor: text;
+}
+
+/* ── Type ─────────────────────────────────────────────────────────── */
+
+.admin-shell .mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.admin-shell .eyebrow {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ── Entrance ─────────────────────────────────────────────────────── */
+/* One orchestrated load rather than motion scattered through the page: rows
+   settle in sequence, then nothing moves again while you read. */
+
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.admin-shell .rise {
+  animation: admin-rise 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell .rise {
+    animation: none;
+  }
+  .admin-shell .pulse::before {
+    animation: none;
+  }
+}
+
+/* ── Signal dot ───────────────────────────────────────────────────── */
+
+.admin-shell .dot {
+  position: relative;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  flex: none;
+}
+.admin-shell .dot.live {
+  background: var(--sig-live);
+}
+.admin-shell .dot.quiet {
+  background: var(--sig-quiet);
+}
+.admin-shell .dot.off {
+  background: var(--sig-off);
+}
+
+/* Only the live dot breathes. A quiet or disabled install is not doing
+   anything, and animating it would say otherwise. */
+.admin-shell .pulse::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  background: var(--sig-live);
+  opacity: 0.25;
+  animation: admin-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes admin-breathe {
+  0%, 100% { transform: scale(0.7); opacity: 0.28; }
+  50%      { transform: scale(1.15); opacity: 0.06; }
+}
+
+/* ── Surfaces ─────────────────────────────────────────────────────── */
+
+.admin-shell .tile {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.022),
+    rgba(255, 255, 255, 0)
+  );
+  padding: 14px 16px 15px;
+}
+
+.admin-shell .rule {
+  border-top: 1px solid var(--rule);
+}
+
+.admin-shell .row {
+  border-top: 1px solid var(--rule);
+  transition: background 0.15s ease;
+}
+.admin-shell .row:hover {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+/* ── Controls ─────────────────────────────────────────────────────── */
+
+.admin-shell .field {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--rule-strong);
+  border-radius: 7px;
+  color: var(--ink);
+  padding: 7px 10px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.admin-shell .field::placeholder {
+  color: var(--ink-faint);
+}
+.admin-shell .field:focus {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-shell .btn {
+  border: 1px solid var(--rule-strong);
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.admin-shell .btn:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.07);
+}
+.admin-shell .btn:active {
+  transform: translateY(0.5px);
+}
+
+.admin-shell .btn-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-faint);
+  padding: 7px 9px;
+}
+.admin-shell .btn-quiet:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--rule);
+}
+
+.admin-shell .btn-danger:hover {
+  border-color: color-mix(in oklab, var(--sig-off) 55%, transparent);
+  color: var(--sig-off);
+  background: color-mix(in oklab, var(--sig-off) 9%, transparent);
+}
+
+/* ── Status pill ──────────────────────────────────────────────────── */
+
+.admin-shell .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  padding: 3px 9px 3px 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.admin-shell .pill.off {
+  border-color: color-mix(in oklab, var(--sig-off) 45%, transparent);
+  color: var(--sig-off);
+  background: color-mix(in oklab, var(--sig-off) 10%, transparent);
+}
+
+/* ── Bars ─────────────────────────────────────────────────────────── */
+
+.admin-shell .bar {
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.18)
+  );
+}
+.admin-shell .bar-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
