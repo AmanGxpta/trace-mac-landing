@@ -18,6 +18,17 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "1.16",
+    date: "2026-08-07",
+    title: "Re-testing Telemetry",
+    changes: [
+      {
+        kind: "improved",
+        text: "The download button and panel are much more improved in UI/UX. The info-message shown about telemetry appears right where what's on plate text option appears.",
+      },
+    ],
+  },
+  {
     version: "1.15",
     date: "2026-08-07",
     title: "Licensing, and knowing which features earn their keep",
