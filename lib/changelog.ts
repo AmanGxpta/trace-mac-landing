@@ -18,6 +18,29 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "1.15",
+    date: "2026-08-07",
+    title: "Licensing, and knowing which features earn their keep",
+    changes: [
+      {
+        kind: "new",
+        text: "Trace checks in once a day to confirm its licence and report its version. The reply is what keeps your access working, so a beta round can now be extended without shipping a whole new build.",
+      },
+      {
+        kind: "new",
+        text: "Anonymous slash command usage — which commands you use and how often, and never what you typed after them. On by default, with a single switch in /config that turns it off, stopping the counting as well as the sending.",
+      },
+      {
+        kind: "new",
+        text: "A Machine ID in /config, derived from this Mac, so support can find your install without you sending any personal detail.",
+      },
+      {
+        kind: "improved",
+        text: "The privacy page now lists every field the daily check-in sends, in full rather than in summary.",
+      },
+    ],
+  },
+  {
     version: "1.11.0",
     date: "2026-07-23",
     title: "Capturing Actions Happened in past",
