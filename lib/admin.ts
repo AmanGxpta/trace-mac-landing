@@ -58,6 +58,80 @@ export async function signOut(): Promise<void> {
   (await cookies()).delete({ name: COOKIE, path: "/admin" });
 }
 
+// MARK: - Looking someone up
+
+/**
+ * Turns a Mac serial into the install id derived from it.
+ *
+ * This is the other half of hashing the serial in the first place, and without
+ * it the privacy choice is just an obstacle: the whole argument for storing a
+ * digest was that support still works, *because the hash is deterministic and
+ * we can recompute it*. That claim is only true if something here actually
+ * recomputes it.
+ *
+ * Must use the same pepper the app was built with (`TRACE_TELEMETRY_PEPPER` in
+ * the Xcode build settings) or every lookup silently misses. Returns null when
+ * unset rather than hashing with an empty pepper and confidently finding
+ * nothing.
+ */
+export function installIdForSerial(serial: string): string | null {
+  const pepper = process.env.TELEMETRY_PEPPER;
+  if (!pepper) return null;
+
+  const trimmed = serial.trim();
+  if (!trimmed) return null;
+
+  const hash = createHash("sha256");
+  hash.update(Buffer.from(pepper, "utf8"));
+  // The app writes a single zero byte between the two, so a pepper ending "AB"
+  // with serial "CD" can't collide with one ending "A" and serial "BCD".
+  hash.update(Buffer.from([0]));
+  hash.update(Buffer.from(trimmed, "utf8"));
+  return hash.digest("hex").slice(0, 32);
+}
+
+const INSTALL_ID_RE = /^[0-9a-f]{32}$/i;
+
+/**
+ * Resolves whatever support pasted into the box.
+ *
+ * Accepts a full install id, the 8-character Machine ID shown in `/config`, or
+ * a raw Mac serial. Apple prints serials uppercase and `IOPlatformSerialNumber`
+ * returns them that way, but someone typing one out by hand will not always —
+ * so both spellings are tried rather than making the person guess which one the
+ * hash wants.
+ */
+export async function findInstalls(query: string) {
+  const q = query.trim();
+  if (!q) return [];
+
+  const candidates = new Set<string>();
+  if (INSTALL_ID_RE.test(q)) candidates.add(q.toLowerCase());
+  for (const spelling of [q, q.toUpperCase()]) {
+    const id = installIdForSerial(spelling);
+    if (id) candidates.add(id);
+  }
+
+  const rows = await prisma.install.findMany({
+    where: {
+      OR: [
+        { id: { in: [...candidates] } },
+        // The 8 characters someone reads off the /config panel.
+        { id: { startsWith: q.toLowerCase() } },
+        { note: { contains: q, mode: "insensitive" } },
+      ],
+    },
+    orderBy: { lastSeenAt: "desc" },
+    take: 20,
+  });
+  return rows;
+}
+
+/** True when serial lookup can work at all — surfaced so the UI can say so. */
+export function serialLookupConfigured(): boolean {
+  return !!process.env.TELEMETRY_PEPPER;
+}
+
 // MARK: - Reading
 
 export type InstallRow = Awaited<ReturnType<typeof listInstalls>>[number];
@@ -110,6 +184,96 @@ export async function versionSpread() {
     channel: r.channel,
     version: r.version,
     count: r._count._all,
+  }));
+}
+
+// MARK: - Command usage
+
+/**
+ * What one install has actually used, by verb.
+ *
+ * Split by source rather than summed, because the split is the interesting
+ * part: a verb with a big `agent` number and no `ui` number is being scripted,
+ * not loved, and totalling them would report the opposite of the truth.
+ */
+export async function commandUsageForInstall(installId: string) {
+  const rows = await prisma.commandUsageDaily.groupBy({
+    by: ["verb", "source"],
+    where: { installId },
+    _sum: { count: true },
+  });
+
+  const byVerb = new Map<
+    string,
+    { verb: string; ui: number; agent: number; voice: number; total: number }
+  >();
+
+  for (const row of rows) {
+    const entry = byVerb.get(row.verb) ?? {
+      verb: row.verb,
+      ui: 0,
+      agent: 0,
+      voice: 0,
+      total: 0,
+    };
+    const n = row._sum.count ?? 0;
+    if (row.source === "ui") entry.ui += n;
+    else if (row.source === "agent") entry.agent += n;
+    else if (row.source === "voice") entry.voice += n;
+    entry.total += n;
+    byVerb.set(row.verb, entry);
+  }
+
+  return [...byVerb.values()].sort((a, b) => b.total - a.total);
+}
+
+/** Days this install has any recorded command activity, newest first. */
+export async function activeDaysForInstall(installId: string) {
+  const rows = await prisma.commandUsageDaily.groupBy({
+    by: ["day"],
+    where: { installId },
+    _sum: { count: true },
+    orderBy: { day: "desc" },
+    take: 30,
+  });
+  return rows.map((r) => ({ day: r.day, count: r._sum.count ?? 0 }));
+}
+
+/**
+ * The fleet-wide leaderboard — which features are actually earning their keep.
+ *
+ * Typed use only. Agent traffic is a different question ("what do agents
+ * automate") and mixing it in here would make a scripted verb look like a
+ * beloved one, which is the exact mistake the source tag exists to prevent.
+ */
+export async function topCommands(days = 30) {
+  const since = new Date(Date.now() - days * 86400 * 1000);
+  const rows = await prisma.commandUsageDaily.groupBy({
+    by: ["verb"],
+    where: { source: "ui", day: { gte: since } },
+    _sum: { count: true },
+    orderBy: { _sum: { count: "desc" } },
+    take: 15,
+  });
+
+  // How many *distinct installs* used each verb — the number that separates
+  // "everyone touches it once" from "two people live in it".
+  //
+  // Raw SQL because Prisma's groupBy `_count` counts rows, and the primary key
+  // here includes `day` — so one person using a verb on ten days would come
+  // back as ten people.
+  const reach = await prisma.$queryRaw<{ verb: string; installs: bigint }[]>`
+    SELECT "verb", COUNT(DISTINCT "installId") AS installs
+    FROM "command_usage_daily"
+    WHERE "source" = 'ui' AND "day" >= ${since}::date
+    GROUP BY "verb"
+  `;
+  const reachByVerb = new Map(reach.map((r) => [r.verb, Number(r.installs)]));
+
+  return rows.map((r) => ({
+    verb: r.verb,
+    count: r._sum.count ?? 0,
+    installs: reachByVerb.get(r.verb) ?? 0,
   }));
 }
 

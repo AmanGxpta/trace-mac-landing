@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import {
   REFRESH_DAYS,
+  findInstalls,
   fleetSummary,
   isAdmin,
   listInstalls,
   refreshBeta,
+  serialLookupConfigured,
   setNote,
   setStatus,
   signIn,
   signOut,
+  topCommands,
   versionSpread,
 } from "@/lib/admin";
 
@@ -50,14 +54,23 @@ async function guard() {
   if (!(await isAdmin())) throw new Error("Unauthorized");
 }
 
-export default async function InstallsPage() {
+export default async function InstallsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   if (!(await isAdmin())) return <SignInForm />;
 
-  const [installs, summary, versions] = await Promise.all([
-    listInstalls(),
+  const { q } = await searchParams;
+  const query = q?.trim() ?? "";
+
+  const [installs, summary, versions, commands] = await Promise.all([
+    query ? findInstalls(query) : listInstalls(),
     fleetSummary(),
     versionSpread(),
+    topCommands(),
   ]);
+  const lookupReady = serialLookupConfigured();
 
   async function disable(formData: FormData) {
     "use server";
@@ -113,6 +126,69 @@ export default async function InstallsPage() {
         </form>
       </header>
 
+      {/* The support entry point. Trace sends a hash of the Mac's serial, never
+          the serial — so this is the box that turns the serial someone reads
+          off About This Mac back into their row. Without it, hashing would just
+          be an obstacle. */}
+      <section className="mb-8">
+        <form method="get" className="flex flex-wrap items-center gap-2">
+          <input
+            name="q"
+            defaultValue={query}
+            placeholder="Mac serial, Machine ID, or note"
+            className="w-72 rounded border border-line2 px-2 py-1.5 text-sm"
+          />
+          <button className="rounded border border-line2 px-3 py-1.5 text-sm text-ink hover:border-accent">
+            Look up
+          </button>
+          {query && (
+            <Link
+              href="/admin/installs"
+              className="text-sm text-ink-faint underline underline-offset-4"
+            >
+              clear
+            </Link>
+          )}
+        </form>
+        {!lookupReady && (
+          <p className="mt-2 text-xs text-red-600">
+            TELEMETRY_PEPPER is not set, so a serial cannot be turned into an
+            install id. Serial lookup will find nothing until it matches the
+            pepper the app was built with.
+          </p>
+        )}
+        {query && (
+          <p className="mt-2 text-xs text-ink-faint">
+            {installs.length} match{installs.length === 1 ? "" : "es"} for{" "}
+            &ldquo;{query}&rdquo;
+          </p>
+        )}
+      </section>
+
+      <section className="mb-8">
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          Most used commands · typed, last 30 days
+        </h2>
+        {commands.length === 0 ? (
+          <p className="text-sm text-ink-faint">
+            No command usage recorded yet.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {commands.map((c) => (
+              <span
+                key={c.verb}
+                title={`${c.installs} install${c.installs === 1 ? "" : "s"}`}
+                className="rounded border border-line2 px-2 py-1 font-mono text-[13px] text-ink"
+              >
+                /{c.verb} · {c.count}
+                <span className="text-ink-faint"> · {c.installs}u</span>
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+
       <section className="mb-8">
         <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
           Version spread
@@ -147,9 +223,12 @@ export default async function InstallsPage() {
             {installs.map((install) => (
               <tr key={install.id} className="border-b border-line2 align-top">
                 <td className="py-3 pr-3">
-                  <div className="font-mono text-[13px] text-ink">
+                  <Link
+                    href={`/admin/installs/${install.id}`}
+                    className="font-mono text-[13px] text-ink underline underline-offset-4 decoration-line2 hover:decoration-accent"
+                  >
                     {install.id.slice(0, 8)}
-                  </div>
+                  </Link>
                   <form action={note} className="mt-1 flex gap-1">
                     <input type="hidden" name="id" value={install.id} />
                     <input
