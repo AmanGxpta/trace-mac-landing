@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-const UPDATED = "5 August 2026";
+const UPDATED = "7 August 2026";
 
 export default function PrivacyPage() {
   return (
@@ -98,9 +98,49 @@ export default function PrivacyPage() {
 
       <DocSection title="What we do collect">
         <p>
-          Anonymous download and update checks, so we know how many copies are
-          running and can ship updates. These carry no personal data and nothing
-          about the contents of your record.
+          Trace checks in with us about once a day. The list below is the whole
+          of it — not a summary of it.
+        </p>
+        <DocList
+          items={[
+            <>
+              <strong className="text-ink">An install ID.</strong> Your Mac&rsquo;s
+              serial number, hashed with a secret built into the app. The serial
+              itself never leaves your machine, and the ID identifies the
+              computer rather than you — we cannot turn it back into a name, an
+              email or a person.
+            </>,
+            <>
+              <strong className="text-ink">Which version you are on</strong> —
+              version, build, release channel, your macOS version and whether
+              the Mac is Apple silicon or Intel. This is how we know an update
+              actually reached people.
+            </>,
+            <>
+              <strong className="text-ink">When your licence runs to</strong>,
+              so the app can be told whether it may still run. The reply to this
+              check-in <em>is</em> your licence, which is why this part is not
+              optional.
+            </>,
+            <>
+              <strong className="text-ink">
+                Which slash commands you use, and how many times.
+              </strong>{" "}
+              A command&rsquo;s name, the date, and a number — nothing else.
+              This is the one part you can switch off, in{" "}
+              <code className="font-mono text-[13.5px] text-ink">/config</code>.
+            </>,
+          ]}
+        />
+        <p>
+          What that last one never includes: the text of any task, note or
+          journal entry, your project names, your{" "}
+          <code className="font-mono text-[13.5px] text-ink">/find</code>{" "}
+          questions, any command you ran with{" "}
+          <code className="font-mono text-[13.5px] text-ink">/cli</code>, file
+          paths, or anything else you typed after the command. If you have
+          renamed a command, it is counted under Trace&rsquo;s own name for it,
+          so the name you chose stays on your Mac.
         </p>
         <p>
           If you email us, join the waitlist, or request access, we keep what you
@@ -115,11 +155,19 @@ export default function PrivacyPage() {
             "Upload your record, your captures, or your Slack messages.",
             "Read your Slack workspace, or hold credentials that could.",
             "Track you across other sites.",
+            "Store the IP address a check-in arrives from. An anonymous ID plus an IP would be a person and a place, which is the thing hashing the serial exists to prevent.",
           ]}
         />
       </DocSection>
 
       <DocSection title="Your control">
+        <p>
+          Command usage sharing is on when you install Trace, and{" "}
+          <code className="font-mono text-[13.5px] text-ink">/config</code>{" "}
+          turns it off. Turning it off stops the counting as well as the
+          sending, and discards whatever had been counted so far — it is not a
+          switch that keeps a quiet record.
+        </p>
         <p>
           Disconnecting Slack inside Trace revokes the app&rsquo;s access with
           Slack and deletes the stored tokens from your Keychain. Deleting the
