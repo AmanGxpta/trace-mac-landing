@@ -33,6 +33,15 @@ model Install {
   id       String @id
   idSource String // serial | uuid | random — how trustworthy the id is
 
+  /// The Mac serial, AES-256-GCM encrypted under TELEMETRY_SERIAL_KEY.
+  ///
+  /// Stored so the admin panel can show a real serial instead of an opaque
+  /// hash — an install id nobody can read is no use in a support conversation.
+  /// Encrypted rather than plain because the key lives in the environment
+  /// rather than the database, so a dump on its own is still not a list of
+  /// warranty-resolvable Macs.
+  serialCipher String?
+
   firstSeenAt DateTime // as the install reckons it, not when we first heard from it
   lastSeenAt  DateTime
 

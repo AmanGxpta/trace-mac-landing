@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/lib/generated/prisma/client";
+import { encryptSerial } from "@/lib/serial";
 
 /**
  * Trace's install check-in.
@@ -104,6 +105,8 @@ export type CommandRow = {
 export type Heartbeat = {
   installId: string;
   idSource: string;
+  /** The hardware serial, plain on the wire and encrypted before it is stored. */
+  serial: string | null;
   version: string;
   build: string;
   channel: string;
@@ -188,6 +191,10 @@ export function parseHeartbeat(raw: unknown): ParseResult {
     return { ok: false, error: "id_source must be serial, uuid, or random" };
   }
 
+  // Optional: builds before 1.15 don't send it, and a heartbeat is never
+  // refused for missing it — the licence check matters more than the label.
+  const serial = str(raw, "serial", 64);
+
   const channel = str(raw, "channel", 16);
   if (!channel || !CHANNELS.has(channel)) {
     return { ok: false, error: "channel must be beta or public" };
@@ -261,6 +268,7 @@ export function parseHeartbeat(raw: unknown): ParseResult {
     value: {
       installId,
       idSource,
+      serial,
       version,
       build,
       channel,
@@ -333,16 +341,32 @@ export async function recordHeartbeat(hb: Heartbeat): Promise<Verdict> {
   });
 
   // Too soon since the last one: keep the row as it stands, but still answer.
-  if (
-    existing &&
-    now.getTime() - existing.lastSeenAt.getTime() < MIN_INTERVAL_SECONDS * 1000
-  ) {
+  //
+  // The `>= 0` is load-bearing. A stored timestamp in the *future* — clock
+  // skew on a device, a bad backfill, a timezone mistake writing local
+  // wall-clock into a timezone-less column — makes this difference negative,
+  // and a negative number is also "less than ten seconds". Without the floor
+  // such a row is rate-limited on every check-in forever: it never updates, so
+  // it never corrects itself, and the install silently stops reporting while
+  // still appearing to check in fine.
+  const sinceLast = existing
+    ? now.getTime() - existing.lastSeenAt.getTime()
+    : Infinity;
+
+  if (existing && sinceLast >= 0 && sinceLast < MIN_INTERVAL_SECONDS * 1000) {
     return { ...verdictFor(existing), ack_through: null };
   }
+
+  // Re-encrypted on every check-in rather than written once: a fresh IV each
+  // time costs nothing, and it means a serial that was missing (pre-1.15 build)
+  // or stored under a rotated key repairs itself on the next heartbeat instead
+  // of needing a backfill.
+  const serialCipher = hb.serial ? encryptSerial(hb.serial) : null;
 
   const fields = {
     idSource: hb.idSource,
     lastSeenAt: now,
+    ...(serialCipher ? { serialCipher } : {}),
     version: hb.version,
     build: hb.build,
     channel: hb.channel,
