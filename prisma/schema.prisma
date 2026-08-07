@@ -22,3 +22,82 @@ model WaitlistSignup {
   @@index([createdAt])
   @@map("waitlist_signups")
 }
+
+/// One row per Mac running Trace.
+///
+/// `id` is the app's `install_id` — 128 bits of a peppered SHA-256 of the Mac's
+/// serial, computed on the device. The raw serial never leaves that Mac, but the
+/// hash is deterministic, so a serial handed over in support resolves to a row
+/// here by running the same hash (see `InstallIdentity` in the Trace repo).
+model Install {
+  id       String @id
+  idSource String // serial | uuid | random — how trustworthy the id is
+
+  firstSeenAt DateTime // as the install reckons it, not when we first heard from it
+  lastSeenAt  DateTime
+
+  version   String
+  build     String
+  channel   String // beta | public
+  osVersion String
+  arch      String
+
+  /// The gate as the *app* computes it, reported for reading only. The override
+  /// below is the one with authority.
+  betaExpiresAt DateTime?
+  betaState     String?
+
+  status        String  @default("active") // active | disabled
+  statusMessage String?
+
+  /// Set by "Refresh 30 days". `betaExpiresAtOverride` is computed once, at the
+  /// moment of the refresh, and then resent unchanged on every heartbeat — the
+  /// response carries a date, never a command, so a dropped or retried delivery
+  /// can neither lose a granted round nor apply one twice.
+  ///
+  /// `betaRefreshCount` exists so a rolling indefinite trial is visible. Without
+  /// it, someone on their sixth refresh looks exactly like someone on their
+  /// first, and refreshing is frictionless in both directions.
+  betaRefreshedAt       DateTime?
+  betaExpiresAtOverride DateTime?
+  betaRefreshCount      Int       @default(0)
+
+  /// Set when a licence moves to new hardware — a logic-board swap or a new
+  /// laptop mints a new id. The old row stops counting as an active user rather
+  /// than being deleted, so the fleet's history doesn't develop a hole.
+  supersededById String?
+
+  /// Free text for whoever this is — "Prasoon", "beta round 3".
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commands CommandUsageDaily[]
+
+  @@index([lastSeenAt])
+  @@index([channel, lastSeenAt])
+  @@index([status])
+  @@map("installs")
+}
+
+/// Slash command counts, already aggregated by the app before they are sent:
+/// one row per (install, day, verb, source), and no column that could hold an
+/// argument, a project name, or anything else the user typed.
+///
+/// The payload's privacy claim is enforced by this shape rather than by a code
+/// path staying correct — there is nowhere here to put the text even by mistake.
+model CommandUsageDaily {
+  installId String
+  day       DateTime @db.Date
+  verb      String // canonical, never the user's renamed spelling
+  source    String // ui | agent | voice
+  count     Int
+
+  install Install @relation(fields: [installId], references: [id], onDelete: Cascade)
+
+  @@id([installId, day, verb, source])
+  @@index([day])
+  @@index([verb, day])
+  @@map("command_usage_daily")
+}
